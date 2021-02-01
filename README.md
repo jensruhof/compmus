@@ -1,4 +1,3 @@
 # compmus
 Computational musicology
-Testing
-test3
+Ik voeg hsizzle toe vanuit rstudio
