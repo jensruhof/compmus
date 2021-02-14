@@ -5,26 +5,103 @@ date: "2/10/2021"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+<!-- # ```{r setup, include=FALSE} -->
+<!-- # knitr::opts_chunk$set(echo = TRUE) -->
+<!-- # ``` -->
+
+## My corpus
+
+To Do: Insert and fix readme text here
+
+#### import library's
+```{r}
+library(tidyverse)
+library(spotifyr)
+library(dplyr)
+library(fmsb)
 ```
 
-## R Markdown
+### Get eminem complete playlist
+``` {r}
+ Eminem <- get_playlist_audio_features("", "6E8sLG3bm1meTRj8n5l0ll")
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+mean_eminem <- Eminem %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+mean_eminem
+```
+#### Least popular songs of eminem according to spotify.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+``` {r}
 
-```{r cars}
-summary(cars)
+Eminem %>% 
+  group_by(track.popularity) %>% 
+  filter(track.popularity <= "35") %>%
+  ggplot(aes(x = track.name, y = track.popularity)) + 
+  geom_col(aes(fill = track.album.name)) +
+  labs(x= "Track name", y= "Popularity") + 
+  ggtitle("What are the least popular Eminem songs in this playlist?", "Popularity ranking < 35 in a specific playlist") +
+  theme(axis.text.x = element_text(angle = 90)
+        ,legend.position = "right")
+
+```
+A thing to note already is that the paul skit appears on multiple albums and that his skits often aren't very popular. A reason for this could be that these skits aren't songs and are often a story within the album. An example is the paul skit or skits I should say. These skits, since there are multiple named Paul are a reference to his music manager Paul Rosenberg in which eminem often features a snippet of a phone conversation with some information about the album.
+
+
+#### Most popular eminem songs according to spotify
+``` {r}
+
+Eminem %>% 
+  group_by(track.popularity) %>% 
+  filter(track.popularity >= "75") %>%
+  ggplot(aes(x = track.name, y = track.popularity)) + 
+  geom_col(aes(fill = track.album.name)) +
+  labs(x= "Track name", y= "Popularity") + 
+  ggtitle("What are the most popular Eminem songs in this playlist?", "Popularity ranking > 75 in a specific playlist") +
+  theme(axis.text.x = element_text(angle = 90)
+        ,legend.position = "right")
+
+
+```
+An interesting thing to see here is that all of his major albums have at least one song with a high popularity with personally one of his best albums "recovery" having two in it. I would like to delve into popularity per album and compare the populartiy with other things spotify measures later on.
+
+
+
+``` {r}
+# create data
+data <- rbind(rep(1,1) , rep(0,10) , mean_eminem)
+
+# Make radar
+radarchart(data, axistype=1 , 
+ 
+    # Polygon changes
+    pcol="black", 
+    pfcol = rgb(0,72,105,165, max = 255), 
+    plwd=2 ,
+ 
+    #Grid changes
+    cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,1,0.2), cglwd=0.8,
+ 
+    # Labels and title
+    vlcex=0.8,
+    title = "mean values Eminem songs")
+
 ```
 
-## Including Plots
+<!-- ## Including Plots -->
 
-You can also embed plots, for example:
+<!-- You can also embed plots, for example: -->
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+<!-- ```{r pressure, echo=FALSE} -->
+<!-- plot(pressure) -->
+<!-- ``` -->
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+<!-- Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. -->
