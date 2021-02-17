@@ -2,7 +2,11 @@
 title: "My Portfolio"
 author: "Jens Ruhof"
 date: "2/10/2021"
-output: html_document
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    theme: plotly
+
 ---
 
 <!-- # ```{r setup, include=FALSE} -->
