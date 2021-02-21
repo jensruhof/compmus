@@ -14,7 +14,8 @@ output:
 <!-- # ``` -->
 
 ## My corpus
-
+Introduction
+================================================================================
 To Do: Insert and fix readme text here
 
 #### import library's
@@ -42,6 +43,10 @@ mean_eminem <- Eminem %>%
   )
 mean_eminem
 ```
+Populartity
+================================================================================
+
+
 #### Least popular songs of eminem according to spotify.
 
 ``` {r}
@@ -78,6 +83,7 @@ Eminem %>%
 An interesting thing to see here is that all of his major albums have at least one song with a high popularity with personally one of his best albums "recovery" having two in it. I would like to delve into popularity per album and compare the populartiy with other things spotify measures later on.
 
 
+### Radarchart of eminems songs
 
 ``` {r}
 # create data
