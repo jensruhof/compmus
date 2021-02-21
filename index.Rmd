@@ -17,6 +17,7 @@ library(dplyr)
 library(fmsb)
 library(png)
 library(plotly)
+library(compmus)
 ```
 
 ``` {r get_playlist, include=FALSE}
@@ -151,7 +152,52 @@ test
 
 ### Chroma of Mockingbird
 
+```{r}
+mockingbird<-
+  get_tidy_audio_analysis("561jH07mF1jHuk7KlaeF0s") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
 
+```
+```{r}
+mockingbird %>%
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c() +
+  ggtitle("Chroma sampling of Mockingbird using euclidean") +
+  theme(title = element_text(size = 9))
+
+```
+
+***
+
+#### Mocking bird
+
+- Mostly played in C D and E
+
+
+### Results
+
+***
+#### Notable things
+
+- Many skits are not popular, still eminem keeps them in his album. This might be since most albums have a story behind them and the skit shows some light on this backstory. An example is the skits with his manager Paul.
+
+- Most of his big albums have atleast one popular song. indicating that he is still performing well even after all those years.
+
+- WHat i still want to do is comapare different albums, especially one of his first vs one of his last and see if there are big differences between them. Sugestions on visualisation are welcome :)
 
 <!-- ### MetricsGraphics enables easy creation of D3 scatterplots, line charts, and histograms. -->
 
