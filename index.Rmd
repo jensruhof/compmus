@@ -1,33 +1,25 @@
 ---
-title: "My Portfolio"
+title: " My portfolio"
 author: "Jens Ruhof"
-date: "2/10/2021"
+date: "2/20/2021"
 output: 
   flexdashboard::flex_dashboard:
     storyboard: true
-    theme: plotly
-
+    social: menu
+    source: embed
 ---
 
-<!-- # ```{r setup, include=FALSE} -->
-<!-- # knitr::opts_chunk$set(echo = TRUE) -->
-<!-- # ``` -->
-
-## My corpus
-Introduction
-================================================================================
-To Do: Insert and fix readme text here
-
-#### import library's
-```{r}
+```{r setup, include=FALSE}
+library(flexdashboard)
 library(tidyverse)
 library(spotifyr)
 library(dplyr)
 library(fmsb)
+library(png)
+library(plotly)
 ```
 
-### Get eminem complete playlist
-``` {r}
+``` {r get_playlist, include=FALSE}
  Eminem <- get_playlist_audio_features("", "6E8sLG3bm1meTRj8n5l0ll")
 
 mean_eminem <- Eminem %>%
@@ -41,80 +33,140 @@ mean_eminem <- Eminem %>%
     mean_valence = mean(valence)
     
   )
-mean_eminem
 ```
-Populartity
-================================================================================
+
+### Introduction
+
+TODO: Tekst readme plakken
 
 
-#### Least popular songs of eminem according to spotify.
+***
 
-``` {r}
+Main focus points
 
+- Least popular songs
+
+- Most popular songs
+
+- Interactive radarchart of spotify measurements on eminem
+
+- Chroma feature example of my favourtite eminem song.
+
+
+***
+
+![Eminem](/home/jensruhof/Documents/Computational_musicology/compmus2/eminem.jpg){width=100%}
+
+
+
+
+
+### Least popular
+
+<!-- # ```{r} -->
+<!-- # library(d3heatmap) -->
+<!-- # d3heatmap(mtcars, scale="column", colors="Blues") -->
+<!-- # ``` -->
+``` {r} 
 Eminem %>% 
   group_by(track.popularity) %>% 
   filter(track.popularity <= "35") %>%
-  ggplot(aes(x = track.name, y = track.popularity)) + 
+  ggplot(aes(x =track.popularity , y = track.name)) + 
   geom_col(aes(fill = track.album.name)) +
-  labs(x= "Track name", y= "Popularity") + 
-  ggtitle("What are the least popular Eminem songs in this playlist?", "Popularity ranking < 35 in a specific playlist") +
-  theme(axis.text.x = element_text(angle = 90)
-        ,legend.position = "right")
-
+  labs(x= "Popularity") + 
+  ggtitle("What are the least popular Eminem songs?", "Popularity ranking < 35") +
+  theme(legend.position = "right",
+        legend.text = element_text( size = 6),
+        text = element_text(size = 8),
+        axis.title.y = element_blank())
 ```
-A thing to note already is that the paul skit appears on multiple albums and that his skits often aren't very popular. A reason for this could be that these skits aren't songs and are often a story within the album. An example is the paul skit or skits I should say. These skits, since there are multiple named Paul are a reference to his music manager Paul Rosenberg in which eminem often features a snippet of a phone conversation with some information about the album.
+
+***
+
+#### Least popular songs
+
+A thing to note already is that the paul skit appears on multiple albums and 
+that his skits often aren't very popular. A reason for this could be that these 
+skits aren't songs and are often a story within the album. An example is the 
+paul skit or skits I should say. These skits, since there are multiple named 
+Paul are a reference to his music manager Paul Rosenberg in which eminem often 
+features a snippet of a phone conversation with some information about the album.
 
 
-#### Most popular eminem songs according to spotify
+### Most popular
+
 ``` {r}
-
 Eminem %>% 
   group_by(track.popularity) %>% 
   filter(track.popularity >= "75") %>%
-  ggplot(aes(x = track.name, y = track.popularity)) + 
+  ggplot(aes(x =track.popularity , y = track.name)) + 
   geom_col(aes(fill = track.album.name)) +
-  labs(x= "Track name", y= "Popularity") + 
-  ggtitle("What are the most popular Eminem songs in this playlist?", "Popularity ranking > 75 in a specific playlist") +
-  theme(axis.text.x = element_text(angle = 90)
-        ,legend.position = "right")
-
-
+  labs(x= "Popularity") + 
+  ggtitle("What are the most popular Eminem songs?", "Popularity ranking > 75") +
+  theme(legend.position = "right",
+        legend.text = element_text( size = 6),
+        text = element_text(size = 8),
+        axis.title.y = element_blank())
 ```
+
+***
+
+#### Most popular songs of Eminem
 An interesting thing to see here is that all of his major albums have at least one song with a high popularity with personally one of his best albums "recovery" having two in it. I would like to delve into popularity per album and compare the populartiy with other things spotify measures later on.
 
-
-### Radarchart of eminems songs
+### Radarplot
 
 ``` {r}
-# create data
-data <- rbind(rep(1,1) , rep(0,10) , mean_eminem)
+test <- plot_ly(
+  type = "scatterpolar",
+  r= c(0.7129386,0.7213708,0.2985401,0.1928719,0.01342138,0.2951325,0.5395462),
+  theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+  fill = "toself"
+)
+test <- test %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,1)
+      )
+    ),
+    showlegend = F
+  )
 
-# Make radar
-radarchart(data, axistype=1 , 
- 
-    # Polygon changes
-    pcol="black", 
-    pfcol = rgb(0,72,105,165, max = 255), 
-    plwd=2 ,
- 
-    #Grid changes
-    cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,1,0.2), cglwd=0.8,
- 
-    # Labels and title
-    vlcex=0.8,
-    title = "mean values Eminem songs")
-
+test
 ```
 
-<!-- ## Including Plots -->
+***
 
-<!-- You can also embed plots, for example: -->
+#### This is a radarchart which represents all the mean values of eminems songs.
 
-<!-- ```{r pressure, echo=FALSE} -->
-<!-- plot(pressure) -->
+- It is interesting that instrumentalness is almost non-existent.
+
+- Energy and danceability are high.
+
+- Speechiness is low, this can be explained by eminemns gimmick. Namely rapping very fast, which is hard to replicate.
+
+
+
+### Chroma of Mockingbird
+
+
+
+<!-- ### MetricsGraphics enables easy creation of D3 scatterplots, line charts, and histograms. -->
+
+<!-- ```{r} -->
+<!-- library(metricsgraphics) -->
+<!-- mjs_plot(mtcars, x=wt, y=mpg) %>% -->
+<!--   mjs_point(color_accessor=carb, size_accessor=carb) %>% -->
+<!--   mjs_labs(x="Weight of Car", y="Miles per Gallon") -->
 <!-- ``` -->
 
-<!-- Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. -->
+<!-- *** -->
 
+<!-- https://hrbrmstr.github.io/metricsgraphics/ -->
 
+<!-- Building metricsgraphics charts follows the “piping” idiom made popular through the magrittr, ggvis and dplyr packages. This makes it possible to avoid one giant function with a ton of parameters and facilitates breaking out the chart building into logical steps.  -->
+
+<!-- While MetricsGraphics.js charts may not have the flexibility of ggplot2, you can build functional, interactive [multi-]line, scatterplot, bar charts & histograms and + even link charts together. -->
 
