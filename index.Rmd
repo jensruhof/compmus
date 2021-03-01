@@ -168,6 +168,87 @@ mean_murderb<- murderb %>%
   )
 ```
 
+``` {r get_playlist_show, include=FALSE}
+eminemshow <- get_playlist_audio_features("", "5g2QlPXMIoH4j34xQiHE1J")
+
+mean_eminemshow <- eminemshow %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+### Week8 shizzle
+
+``` {r} 
+mockingbird <-
+  get_tidy_audio_analysis("561jH07mF1jHuk7KlaeF0s") %>% # Change URI.
+  compmus_align(bars, segments) %>%                     # Change `bars`
+  select(bars) %>%                                      #   in all three
+  unnest(bars) %>%                                      #   of these lines.
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "rms", norm = "euclidean"              # Change summary & norm.
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "rms", norm = "euclidean"              # Change summary & norm.
+      )
+  )
+
+
+mockingbird %>%
+  compmus_gather_timbre() %>%
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = basis,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  scale_fill_viridis_c() +                              
+  theme_classic()
+
+mockingbird %>%
+  compmus_self_similarity(timbre, "cosine") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+```
+
+***
+
+#### week8 text
+
+xxxxs.
+
+
+
 
 ### Introduction
 
@@ -210,7 +291,7 @@ Main focus points
 <!-- # d3heatmap(mtcars, scale="column", colors="Blues") -->
 <!-- # ``` -->
 ``` {r} 
-Eminem %>% 
+LEAST <- Eminem %>% 
   group_by(track.popularity) %>% 
   filter(track.popularity <= "35") %>%
   ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
@@ -218,9 +299,11 @@ Eminem %>%
   labs(x= "Popularity") + 
   ggtitle("What are the least popular Eminem songs?", "Popularity ranking < 35") +
   theme(legend.position = "right",
-        legend.text = element_text( size = 6),
-        text = element_text(size = 8),
+        legend.text = element_text( size = 10),
+        text = element_text(size = 10),
         axis.title.y = element_blank())
+
+ggplotly(LEAST)
 ```
 
 ***
@@ -238,7 +321,7 @@ features a snippet of a phone conversation with some information about the album
 ### Most popular
 
 ``` {r}
-Eminem %>% 
+most <- Eminem %>% 
   group_by(track.popularity) %>% 
   filter(track.popularity >= "75") %>%
   ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
@@ -246,9 +329,11 @@ Eminem %>%
   labs(x= "Popularity") + 
   ggtitle("What are the most popular Eminem songs?", "Popularity ranking > 75") +
   theme(legend.position = "right",
-        legend.text = element_text( size = 6),
-        text = element_text(size = 8),
+        legend.text = element_text( size = 10),
+        text = element_text(size = 10),
         axis.title.y = element_blank())
+
+ggplotly(most)
 ```
 
 ***
@@ -336,6 +421,12 @@ fig <- fig %>%
     name = 'Music to be murdered by side B'
   )
 fig <- fig %>%
+  add_trace(
+    r = c(0.72035, 0.604985, 0.28606, 0.1263365, 0.04794438, 0.17504, 0.504715),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'The Eminem Show'
+  )
+fig <- fig %>%
   layout(
     polar = list(
       radialaxis = list(
@@ -413,27 +504,6 @@ mockingbird %>%
 
 
 
-### Least popular test
-
-<!-- # ```{r} -->
-<!-- # library(d3heatmap) -->
-<!-- # d3heatmap(mtcars, scale="column", colors="Blues") -->
-<!-- # ``` -->
-``` {r} 
-least <- Eminem %>% 
-  group_by(track.popularity) %>% 
-  filter(track.popularity <= "35") %>%
-  ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
-  geom_col(aes(fill = track.album.name)) +
-  labs(x= "Popularity") + 
-  ggtitle("What are the least popular Eminem songs?", "Popularity ranking < 35") +
-  theme(legend.position = "right",
-        legend.text = element_text( size = 6),
-        text = element_text(size = 8),
-        axis.title.y = element_blank()) +
-  labs(fill = "Album Name") 
-least
-```
 
 <!-- # ``` {r} -->
 <!-- # fig <- plot_ly( -->
