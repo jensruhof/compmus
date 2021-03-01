@@ -21,6 +21,7 @@ library(compmus)
 ```
 
 ``` {r get_playlist, include=FALSE}
+# Eminem overall
  Eminem <- get_playlist_audio_features("", "6E8sLG3bm1meTRj8n5l0ll")
 
 mean_eminem <- Eminem %>%
@@ -35,6 +36,138 @@ mean_eminem <- Eminem %>%
     
   )
 ```
+
+
+``` {r get_playlist_lp, include=FALSE}
+# Shady lp
+shady_lp <- get_playlist_audio_features("", "35sidb3NwfwV5QYnri3yLv")
+
+mean_shadylp <- shady_lp %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+
+``` {r get_playlist_xv, include=FALSE}
+shadyxv <- get_playlist_audio_features("", "3oJ5M47mmYILrqHyzuXctM")
+
+mean_shadyxv <- shadyxv %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_rev, include=FALSE}
+revival <- get_playlist_audio_features("", "7yqbChSYPODqONRuAw4noI")
+
+mean_revival <- revival %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_ref, include=FALSE}
+relapse_refill <- get_playlist_audio_features("", "1xyhz9gNz5jJIVTOA9v6Dh")
+
+mean_relapse_refill <- relapse_refill %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_del, include=FALSE}
+relapse_deluxe <- get_playlist_audio_features("", "1aQ1zZBcyBFDwsuOdm19cz")
+
+mean_relapse_deluxe<- relapse_deluxe %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_rec, include=FALSE}
+recovery <- get_playlist_audio_features("", "2FDhk6jh6iQUDCc7n73diZ")
+
+mean_recovery<- recovery %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_ma, include=FALSE}
+murdera <- get_playlist_audio_features("", "69NMqLx5Kszkwl0buUEoBA")
+
+mean_murdera<- murdera %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_mb, include=FALSE}
+murderb <- get_playlist_audio_features("", "5ZUIc7iAkEBBeEXzyj7eia")
+
+mean_murderb<- murderb %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
 
 ### Introduction
 
@@ -80,7 +213,7 @@ Main focus points
 Eminem %>% 
   group_by(track.popularity) %>% 
   filter(track.popularity <= "35") %>%
-  ggplot(aes(x =track.popularity , y = track.name)) + 
+  ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
   geom_col(aes(fill = track.album.name)) +
   labs(x= "Popularity") + 
   ggtitle("What are the least popular Eminem songs?", "Popularity ranking < 35") +
@@ -108,7 +241,7 @@ features a snippet of a phone conversation with some information about the album
 Eminem %>% 
   group_by(track.popularity) %>% 
   filter(track.popularity >= "75") %>%
-  ggplot(aes(x =track.popularity , y = track.name)) + 
+  ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
   geom_col(aes(fill = track.album.name)) +
   labs(x= "Popularity") + 
   ggtitle("What are the most popular Eminem songs?", "Popularity ranking > 75") +
@@ -126,24 +259,93 @@ An interesting thing to see here is that all of his major albums have at least o
 ### Radarplot
 
 ``` {r}
-test <- plot_ly(
-  type = "scatterpolar",
-  r= c(0.7129386,0.7213708,0.2985401,0.1928719,0.01342138,0.2951325,0.5395462),
-  theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-  fill = "toself"
-)
-test <- test %>%
+# test <- plot_ly(
+#   type = "scatterpolar",
+#   r= c(0.7129386,0.7213708,0.2985401,0.1928719,0.01342138,0.2951325,0.5395462),
+#   theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+#   fill = "toself"
+# )
+# test <- test %>%
+#   layout(
+#     polar = list(
+#       radialaxis = list(
+#         visible = T,
+#         range = c(0,1)
+#       )
+#     ),
+#     showlegend = F
+#   )
+# 
+# test
+fig <- plot_ly(
+    type = 'scatterpolar',
+    fill = 'toself'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0.7129386, 0.7213708, 0.2985401, 0.1928719, 0.01342138, 0.2951325, 0.5395462),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Overall'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0.7283333, 0.6116333, 0.39715, 0.2735885, 0.05342238, 0.3095833, 0.6580333),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Shady LP'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.6994286, 0.7866071, 0.240125, 0.1382441, 0.0007273875, 0.2240429, 0.5306786),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Shady XV'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.68, 0.7187368, 0.2828474, 0.26261, 5.927158e-05, 0.3540158, 0.5248947),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Revival'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.6959655, 0.7850345, 0.3074414, 0.2102438, 3.313793e-07, 0.3116, 0.558),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Relapse Refill'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.7161364, 0.7728636, 0.3247182, 0.2411955, 4.368182e-07, 0.3461591, 0.551),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Relapse Deluxe'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.6685294, 0.9168824, 0.2466588, 0.1525941, 1.3e-07, 0.3044941, 0.5481765),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Recovery'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.714, 0.66645, 0.219065, 0.1089275, 0.0003467275, 0.31603, 0.431345),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Music to be murdered by side A'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.7418056, 0.6893056, 0.2627111, 0.1610169, 0.0004116275, 0.3235917, 0.5114167),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Music to be murdered by side B'
+  )
+fig <- fig %>%
   layout(
     polar = list(
       radialaxis = list(
         visible = T,
         range = c(0,1)
       )
-    ),
-    showlegend = F
+    )
   )
 
-test
+fig
 ```
 
 ***
@@ -155,6 +357,8 @@ test
 - Energy and danceability are high.
 
 - Speechiness is low, this can be explained by eminemns gimmick. Namely rapping very fast, which is hard to replicate.
+- Most of his albums share the same charcteristics, mainly differing in energy.
+
 
 
 
@@ -207,6 +411,102 @@ mockingbird %>%
 
 - WHat i still want to do is comapare different albums, especially one of his first vs one of his last and see if there are big differences between them. Sugestions on visualisation are welcome :)
 
+
+
+### Least popular test
+
+<!-- # ```{r} -->
+<!-- # library(d3heatmap) -->
+<!-- # d3heatmap(mtcars, scale="column", colors="Blues") -->
+<!-- # ``` -->
+``` {r} 
+least <- Eminem %>% 
+  group_by(track.popularity) %>% 
+  filter(track.popularity <= "35") %>%
+  ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
+  geom_col(aes(fill = track.album.name)) +
+  labs(x= "Popularity") + 
+  ggtitle("What are the least popular Eminem songs?", "Popularity ranking < 35") +
+  theme(legend.position = "right",
+        legend.text = element_text( size = 6),
+        text = element_text(size = 8),
+        axis.title.y = element_blank()) +
+  labs(fill = "Album Name") 
+least
+```
+
+<!-- # ``` {r} -->
+<!-- # fig <- plot_ly( -->
+<!-- #     type = 'scatterpolar', -->
+<!-- #     fill = 'toself' -->
+<!-- #   )  -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.7129386, 0.7213708, 0.2985401, 0.1928719, 0.01342138, 0.2951325, 0.5395462), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Overall' -->
+<!-- #   )  -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.7283333, 0.6116333, 0.39715, 0.2735885, 0.05342238, 0.3095833, 0.6580333), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Shady LP' -->
+<!-- #   ) -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.6994286, 0.7866071, 0.240125, 0.1382441, 0.0007273875, 0.2240429, 0.5306786), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Shady XV' -->
+<!-- #   ) -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.68, 0.7187368, 0.2828474, 0.26261, 5.927158e-05, 0.3540158, 0.5248947), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Revival' -->
+<!-- #   ) -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.6959655, 0.7850345, 0.3074414, 0.2102438, 3.313793e-07, 0.3116, 0.558), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Relapse Refill' -->
+<!-- #   ) -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.7161364, 0.7728636, 0.3247182, 0.2411955, 4.368182e-07, 0.3461591, 0.551), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Relapse Deluxe' -->
+<!-- #   ) -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.6685294, 0.9168824, 0.2466588, 0.1525941, 1.3e-07, 0.3044941, 0.5481765), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Recovery' -->
+<!-- #   ) -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.714, 0.66645, 0.219065, 0.1089275, 0.0003467275, 0.31603, 0.431345), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Music to be murdered by side A' -->
+<!-- #   ) -->
+<!-- # fig <- fig %>% -->
+<!-- #   add_trace( -->
+<!-- #     r = c(0.7418056, 0.6893056, 0.2627111, 0.1610169, 0.0004116275, 0.3235917, 0.5114167), -->
+<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
+<!-- #     name = 'Music to be murdered by side B' -->
+<!-- #   ) -->
+<!-- # fig <- fig %>% -->
+<!-- #   layout( -->
+<!-- #     polar = list( -->
+<!-- #       radialaxis = list( -->
+<!-- #         visible = T, -->
+<!-- #         range = c(0,1) -->
+<!-- #       ) -->
+<!-- #     ) -->
+<!-- #   ) -->
+<!-- #  -->
+<!-- # fig -->
+<!-- #  -->
+<!-- # ``` -->
 <!-- ### MetricsGraphics enables easy creation of D3 scatterplots, line charts, and histograms. -->
 
 <!-- ```{r} -->
