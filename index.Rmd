@@ -184,14 +184,14 @@ mean_eminemshow <- eminemshow %>%
   )
 ```
 
-### Week8 shizzle
+### Week8 timbre and self similarity
 
 ``` {r} 
 mockingbird <-
   get_tidy_audio_analysis("561jH07mF1jHuk7KlaeF0s") %>% # Change URI.
-  compmus_align(bars, segments) %>%                     # Change `bars`
-  select(bars) %>%                                      #   in all three
-  unnest(bars) %>%                                      #   of these lines.
+  compmus_align(sections, segments) %>%                     # Change `bars`
+  select(sections) %>%                                      #   in all three
+  unnest(sections) %>%                                      #   of these lines.
   mutate(
     pitches =
       map(segments,
@@ -245,7 +245,10 @@ mockingbird %>%
 
 #### week8 text
 
-xxxxs.
+TO do:
+- mess around with parameters.
+- compare timbre and chroma example
+
 
 
 
