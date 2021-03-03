@@ -296,7 +296,7 @@ Main focus points
 ``` {r} 
 LEAST <- Eminem %>% 
   group_by(track.popularity) %>% 
-  filter(track.popularity <= "35") %>%
+  filter(track.popularity <= 35) %>%
   ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
   geom_col(aes(fill = track.album.name)) +
   labs(x= "Popularity") + 
@@ -326,7 +326,7 @@ features a snippet of a phone conversation with some information about the album
 ``` {r}
 most <- Eminem %>% 
   group_by(track.popularity) %>% 
-  filter(track.popularity >= "75") %>%
+  filter(track.popularity >= 75) %>%
   ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
   geom_col(aes(fill = track.album.name)) +
   labs(x= "Popularity") + 
