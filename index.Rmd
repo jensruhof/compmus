@@ -184,6 +184,70 @@ mean_eminemshow <- eminemshow %>%
   )
 ```
 
+``` {r get_playlist_matherlp, include=FALSE}
+matherlp<- get_playlist_audio_features("", "1ILmjmVb32khVNXG2Zw7kp")
+
+mean_matherlp <- matherlp %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_matherlp2, include=FALSE}
+matherlp2<- get_playlist_audio_features("", "2kmroX8obtAPEYaVPAaVHi")
+
+mean_matherlp2 <- matherlp2 %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_kamikaze, include=FALSE}
+kamikaze<- get_playlist_audio_features("", "6B5em5RI6brFjyK7eyos1h")
+
+mean_kamikaze <- kamikaze %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_encore, include=FALSE}
+encore<- get_playlist_audio_features("", "5VdzQrI0NliDdfwjQ0rPLN")
+
+mean_encore <- encore %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
 ### Week8 timbre and self similarity
 
 ``` {r} 
@@ -428,6 +492,30 @@ fig <- fig %>%
     r = c(0.72035, 0.604985, 0.28606, 0.1263365, 0.04794438, 0.17504, 0.504715),
     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
     name = 'The Eminem Show'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.7386667, 0.6762222, 0.3176167, 0.1434128, 1.096333e-05, 0.3192111, 0.5775444),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'The Marshal Mathers LP'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.679125, 0.8578125, 0.3076563, 0.2053562, 0.00239375, 0.4185125, 0.521),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'The Marshal Mathers LP2'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.7768462, 0.6326154, 0.3834615, 0.2434692, 0, 0.2661923, 0.5315385),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Kamikaze'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.701087, 0.646, 0.2990478, 0.2437839, 0.008007407, 0.2993522, 0.5071261),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Encore'
   )
 fig <- fig %>%
   layout(
