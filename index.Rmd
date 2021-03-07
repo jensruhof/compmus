@@ -18,6 +18,11 @@ library(fmsb)
 library(png)
 library(plotly)
 library(compmus)
+library(gridExtra)
+library(cowplot)
+library(forcats)
+library(knitr)
+library(ggpubr)
 ```
 
 ``` {r get_playlist, include=FALSE}
@@ -248,47 +253,288 @@ mean_encore <- encore %>%
   )
 ```
 
-### Week8 timbre and self similarity
+### Key vs chorodgram analysis of Mockingbird vs outlier Tone deaf
 
-``` {r} 
-mockingbird <-
-  get_tidy_audio_analysis("561jH07mF1jHuk7KlaeF0s") %>% # Change URI.
-  compmus_align(sections, segments) %>%                     # Change `bars`
-  select(sections) %>%                                      #   in all three
-  unnest(sections) %>%                                      #   of these lines.
+``` {r get_chors}
+circshift <- function(v, n) {
+  if (n == 0) v else c(tail(v, n), head(v, -n))
+}
+
+#      C     C#    D     Eb    E     F     F#    G     Ab    A     Bb    B
+major_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    0,    0)
+minor_chord <-
+  c(   1,    0,    0,    1,    0,    0,    0,    1,    0,    0,    0,    0)
+seventh_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    1,    0)
+
+major_key <-
+  c(6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88)
+minor_key <-
+  c(6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17)
+
+chord_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:7", circshift(seventh_chord, 6),
+    "Gb:maj", circshift(major_chord, 6),
+    "Bb:min", circshift(minor_chord, 10),
+    "Db:maj", circshift(major_chord, 1),
+    "F:min", circshift(minor_chord, 5),
+    "Ab:7", circshift(seventh_chord, 8),
+    "Ab:maj", circshift(major_chord, 8),
+    "C:min", circshift(minor_chord, 0),
+    "Eb:7", circshift(seventh_chord, 3),
+    "Eb:maj", circshift(major_chord, 3),
+    "G:min", circshift(minor_chord, 7),
+    "Bb:7", circshift(seventh_chord, 10),
+    "Bb:maj", circshift(major_chord, 10),
+    "D:min", circshift(minor_chord, 2),
+    "F:7", circshift(seventh_chord, 5),
+    "F:maj", circshift(major_chord, 5),
+    "A:min", circshift(minor_chord, 9),
+    "C:7", circshift(seventh_chord, 0),
+    "C:maj", circshift(major_chord, 0),
+    "E:min", circshift(minor_chord, 4),
+    "G:7", circshift(seventh_chord, 7),
+    "G:maj", circshift(major_chord, 7),
+    "B:min", circshift(minor_chord, 11),
+    "D:7", circshift(seventh_chord, 2),
+    "D:maj", circshift(major_chord, 2),
+    "F#:min", circshift(minor_chord, 6),
+    "A:7", circshift(seventh_chord, 9),
+    "A:maj", circshift(major_chord, 9),
+    "C#:min", circshift(minor_chord, 1),
+    "E:7", circshift(seventh_chord, 4),
+    "E:maj", circshift(major_chord, 4),
+    "G#:min", circshift(minor_chord, 8),
+    "B:7", circshift(seventh_chord, 11),
+    "B:maj", circshift(major_chord, 11),
+    "D#:min", circshift(minor_chord, 3)
+  )
+
+key_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:maj", circshift(major_key, 6),
+    "Bb:min", circshift(minor_key, 10),
+    "Db:maj", circshift(major_key, 1),
+    "F:min", circshift(minor_key, 5),
+    "Ab:maj", circshift(major_key, 8),
+    "C:min", circshift(minor_key, 0),
+    "Eb:maj", circshift(major_key, 3),
+    "G:min", circshift(minor_key, 7),
+    "Bb:maj", circshift(major_key, 10),
+    "D:min", circshift(minor_key, 2),
+    "F:maj", circshift(major_key, 5),
+    "A:min", circshift(minor_key, 9),
+    "C:maj", circshift(major_key, 0),
+    "E:min", circshift(minor_key, 4),
+    "G:maj", circshift(major_key, 7),
+    "B:min", circshift(minor_key, 11),
+    "D:maj", circshift(major_key, 2),
+    "F#:min", circshift(minor_key, 6),
+    "A:maj", circshift(major_key, 9),
+    "C#:min", circshift(minor_key, 1),
+    "E:maj", circshift(major_key, 4),
+    "G#:min", circshift(minor_key, 8),
+    "B:maj", circshift(major_key, 11),
+    "D#:min", circshift(minor_key, 3)
+  )
+
+```
+
+``` {r get_info_chord}
+mockingbird_chord <-
+  get_tidy_audio_analysis("0KOYV2jgRZWLcLI94kiscs") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
   mutate(
     pitches =
       map(segments,
         compmus_summarise, pitches,
-        method = "rms", norm = "euclidean"              # Change summary & norm.
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+tone_chord <-
+  get_tidy_audio_analysis("1cEUi8QulMj1xgrPwwGC2p") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+mockingbird_key <-
+  get_tidy_audio_analysis("0KOYV2jgRZWLcLI94kiscs") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+tone_key <-
+  get_tidy_audio_analysis("1cEUi8QulMj1xgrPwwGC2p") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+```
+
+``` {r plot_chord_key}
+mbc <- mockingbird_chord %>% 
+  compmus_match_pitch_template(
+    chord_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  # scale_x_discrete(breaks = seq(0, 266.424, by = 60)) +
+  # scale_y_discrete(breaks = seq(0, 266.424, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") +
+  theme(axis.text=element_text(size=5))
+
+tc <- tone_chord %>% 
+  compmus_match_pitch_template(
+    chord_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") +
+  theme(axis.text=element_text(size=5))
+
+
+mbk <- mockingbird_key %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  # scale_x_discrete(breaks = seq(0, 266.424, by = 60)) +
+  # scale_y_discrete(breaks = seq(0, 266.424, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") +
+  theme(axis.text=element_text(size=5))
+
+tk <- tone_key %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") +
+  theme(axis.text=element_text(size=5))
+
+
+```
+
+
+
+
+```{r chord_key_grid}
+grid.arrange (arrangeGrob(mbc, top=grid::textGrob("Mockingbird", hjust = 0.15), left="Chord"),arrangeGrob(tc,top=grid::textGrob("Tone deaf", hjust = 0.21)),arrangeGrob(mbk, left="Key"),tk,ncol=2, nrow=2, widths = c(2.2,2) ,heights = c(2.2,2))
+# ggarrange(mbc, tc, mbk, tk + rremove("x.text"),
+#           ncol = 2, nrow = 2)
+```
+
+
+
+
+***
+
+#### Explanation of Mockingbird and Tone deaf.
+
+- The keygram for mockingbird is a lot clearer than the chordogram, Mockingbird is know for its piano play, which you can clearly follow over time.
+- The grams for tone deaf are totally different and don't seem correct. However tone deaf is I believe the only number of eminem where he doesn't change his sound throughout the song. The interesting thing woth tone deaf is that the same chords are repeated the entire length of the song. 
+
+
+
+### timbre and self similarity
+
+```{r ssm info}
+mockingbird <-
+  get_tidy_audio_analysis("0KOYV2jgRZWLcLI94kiscs") %>% # Change URI.
+  compmus_align(bars, segments) %>%                     # Change `bars`
+  select(bars) %>%                                      #   in all three
+  unnest(bars) %>%                                      #   of these lines.
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"              # Change summary & norm.
       )
   ) %>%
   mutate(
     timbre =
       map(segments,
         compmus_summarise, timbre,
-        method = "rms", norm = "euclidean"              # Change summary & norm.
+        method = "mean"              # Change summary & norm.
       )
   )
+tone <-
+  get_tidy_audio_analysis("1cEUi8QulMj1xgrPwwGC2p") %>% # Change URI.
+  compmus_align(bars, segments) %>%                     # Change `bars`
+  select(bars) %>%                                      #   in all three
+  unnest(bars) %>%                                      #   of these lines.
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "rms", norm = "manhattan"              # Change summary & norm.
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"              # Change summary & norm.
+      )
+  )
+```
 
-
-mockingbird %>%
-  compmus_gather_timbre() %>%
-  ggplot(
-    aes(
-      x = start + duration / 2,
-      width = duration,
-      y = basis,
-      fill = value
-    )
-  ) +
-  geom_tile() +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
-  scale_fill_viridis_c() +                              
-  theme_classic()
-
-mockingbird %>%
-  compmus_self_similarity(timbre, "cosine") %>% 
+```{r ssm plots}
+op <- mockingbird %>%
+  compmus_self_similarity(pitches, "manhattan") %>% 
   ggplot(
     aes(
       x = xstart + xduration / 2,
@@ -300,18 +546,79 @@ mockingbird %>%
   ) +
   geom_tile() +
   coord_fixed() +
+  scale_x_continuous(breaks = seq(0, 266.424, by = 60)) +
+  scale_y_continuous(breaks = seq(0, 266.424, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+ot <- mockingbird %>%
+  compmus_self_similarity(timbre, "euclidean") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_x_continuous(breaks = seq(0, 266.424, by = 60)) +
+  scale_y_continuous(breaks = seq(0, 266.424, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+rp <- tone %>%
+  compmus_self_similarity(pitches, "aitchison") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_x_continuous(breaks = seq(0, 282.581, by = 60)) +
+  scale_y_continuous(breaks = seq(0, 282.812, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+rt <- tone %>%
+  compmus_self_similarity(timbre, "euclidean") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_x_continuous(breaks = seq(0, 282.812, by = 60)) +
+  scale_y_continuous(breaks = seq(0, 282.812, by = 60)) +
   scale_fill_viridis_c(guide = "none") +
   theme_classic() +
   labs(x = "", y = "")
 ```
 
+```{r ssm grid}
+grid.arrange (arrangeGrob(op, top=grid::textGrob("Mockingbird", hjust = 0.15), left="Chroma"),arrangeGrob(rp,top=grid::textGrob("Tone deaf", hjust = 0.21)),arrangeGrob(ot, left="Timbre"),rt,ncol=2, nrow=2, widths = c(2.2,2) ,heights = c(2.2,2), top=grid::textGrob("SSM, based on bars, time in seconds", hjust= 0.42))
+```
+
+
+
 ***
 
 #### week8 text
 
-TO do:
-- mess around with parameters.
-- compare timbre and chroma example
+- figure 1 shows Self-similarity matrices, segmented by bars, with the axes in seconds of the song mockingbird. The timbre based matrix expresses the blocks that can also be seen in chroma more vividly.  around the 90 second mark you see a switch with the timbre, this is also where the refrain of mockingbird starts and more instruments chime in. around the 300 mark the songe ends which can be seen in the chroma matrix, if you look at the crossing yellow lines.
+- In figure 2 I wanted to see if a number by Eminem called Tone deaf would yield interesting or different results, and it sure did. This number is one of the few songs of Eminem where the beat stays consistent and the matrices show this.
 
 
 
