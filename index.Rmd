@@ -28,7 +28,6 @@ library(ggpubr)
 ``` {r get_playlist, include=FALSE}
 # Eminem overall
  Eminem <- get_playlist_audio_features("", "6E8sLG3bm1meTRj8n5l0ll")
-
 mean_eminem <- Eminem %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -46,7 +45,6 @@ mean_eminem <- Eminem %>%
 ``` {r get_playlist_lp, include=FALSE}
 # Shady lp
 shady_lp <- get_playlist_audio_features("", "35sidb3NwfwV5QYnri3yLv")
-
 mean_shadylp <- shady_lp %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -63,7 +61,6 @@ mean_shadylp <- shady_lp %>%
 
 ``` {r get_playlist_xv, include=FALSE}
 shadyxv <- get_playlist_audio_features("", "3oJ5M47mmYILrqHyzuXctM")
-
 mean_shadyxv <- shadyxv %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -79,7 +76,6 @@ mean_shadyxv <- shadyxv %>%
 
 ``` {r get_playlist_rev, include=FALSE}
 revival <- get_playlist_audio_features("", "7yqbChSYPODqONRuAw4noI")
-
 mean_revival <- revival %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -95,7 +91,6 @@ mean_revival <- revival %>%
 
 ``` {r get_playlist_ref, include=FALSE}
 relapse_refill <- get_playlist_audio_features("", "1xyhz9gNz5jJIVTOA9v6Dh")
-
 mean_relapse_refill <- relapse_refill %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -111,7 +106,6 @@ mean_relapse_refill <- relapse_refill %>%
 
 ``` {r get_playlist_del, include=FALSE}
 relapse_deluxe <- get_playlist_audio_features("", "1aQ1zZBcyBFDwsuOdm19cz")
-
 mean_relapse_deluxe<- relapse_deluxe %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -127,7 +121,6 @@ mean_relapse_deluxe<- relapse_deluxe %>%
 
 ``` {r get_playlist_rec, include=FALSE}
 recovery <- get_playlist_audio_features("", "2FDhk6jh6iQUDCc7n73diZ")
-
 mean_recovery<- recovery %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -143,7 +136,6 @@ mean_recovery<- recovery %>%
 
 ``` {r get_playlist_ma, include=FALSE}
 murdera <- get_playlist_audio_features("", "69NMqLx5Kszkwl0buUEoBA")
-
 mean_murdera<- murdera %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -159,7 +151,6 @@ mean_murdera<- murdera %>%
 
 ``` {r get_playlist_mb, include=FALSE}
 murderb <- get_playlist_audio_features("", "5ZUIc7iAkEBBeEXzyj7eia")
-
 mean_murderb<- murderb %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -175,7 +166,6 @@ mean_murderb<- murderb %>%
 
 ``` {r get_playlist_show, include=FALSE}
 eminemshow <- get_playlist_audio_features("", "5g2QlPXMIoH4j34xQiHE1J")
-
 mean_eminemshow <- eminemshow %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -191,7 +181,6 @@ mean_eminemshow <- eminemshow %>%
 
 ``` {r get_playlist_matherlp, include=FALSE}
 matherlp<- get_playlist_audio_features("", "1ILmjmVb32khVNXG2Zw7kp")
-
 mean_matherlp <- matherlp %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -207,7 +196,6 @@ mean_matherlp <- matherlp %>%
 
 ``` {r get_playlist_matherlp2, include=FALSE}
 matherlp2<- get_playlist_audio_features("", "2kmroX8obtAPEYaVPAaVHi")
-
 mean_matherlp2 <- matherlp2 %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -223,7 +211,6 @@ mean_matherlp2 <- matherlp2 %>%
 
 ``` {r get_playlist_kamikaze, include=FALSE}
 kamikaze<- get_playlist_audio_features("", "6B5em5RI6brFjyK7eyos1h")
-
 mean_kamikaze <- kamikaze %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -239,7 +226,6 @@ mean_kamikaze <- kamikaze %>%
 
 ``` {r get_playlist_encore, include=FALSE}
 encore<- get_playlist_audio_features("", "5VdzQrI0NliDdfwjQ0rPLN")
-
 mean_encore <- encore %>%
   summarise(
     mean_danceability = mean(danceability),
@@ -252,6 +238,49 @@ mean_encore <- encore %>%
     
   )
 ```
+
+### Tempograms
+``` {r load tempos, cache = TRUE}
+graveola <- get_tidy_audio_analysis("20oenBXlmwIfK0F3fQIjhM")
+
+cyclic <- graveola %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+non_cyclic <- graveola %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+```
+
+``` {r plotting, cache = TRUE}
+grid.arrange (arrangeGrob(cyclic, top=grid::textGrob("cyclic", hjust = 0.15), left="Kim"),arrangeGrob(non_cyclic,top=grid::textGrob("non-cyclic", hjust = 0.21)),ncol=2, nrow=1, widths = c(2.2,2))
+```
+
+
+***
+
+As you can see the cyclic vs non cyclic tempo analysis has a very different estimation of BPM.
+According to https://getsongbpm.com/song/kim/jq1ooB Kim has a BPM of 142, whcih is more in line with the
+cyclic estimation. I want to know what exactly casuses the differences between these estimation, so if you do please leave it in the review :).
+
+I chose for Kim, since it's an old song of eminem and can be seen as an outlier, since the song is critisized as going to far. Other songs i have tried where also more stable than this one, a possible explanation for this consistency could be the rap genre. Rap is often consistent in BPM, since the ruthm and beat is used to spit raps to, so clear lines where expected.
+
+further more running the grams where intense for my machine by utilizing 100% of my ram for 30 minutes straight as seen in the attachment. I want to do more test runs, but before i do that i need to install more ram :)
+
+
+***
+
+![Eminem](/home/jensruhof/Documents/Computational_musicology/compmus2/struggle.jpg){width=100%}
+
 
 ### Key vs chorodgram analysis of Mockingbird vs outlier Tone deaf
 
