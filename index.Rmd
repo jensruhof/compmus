@@ -250,6 +250,14 @@ get_conf_mat <- function(fit) {
     conf_mat(truth = outcome, estimate = .pred_class)
 }
 
+get_pr <- function(fit) {
+  fit %>% 
+    conf_mat_resampled() %>% 
+    group_by(Prediction) %>% mutate(precision = Freq / sum(Freq)) %>% 
+    group_by(Truth) %>% mutate(recall = Freq / sum(Freq)) %>% 
+    ungroup() %>% filter(Prediction == Truth) %>% 
+    select(class = Prediction, precision, recall)
+}  
 ```
 
 ### Predicting a songs album
@@ -348,17 +356,18 @@ eminem_forest <-
 ```
 
 ``` {r forest pred}
-# eminem_forest %>% get_pr()
+predi <-eminem_forest %>% get_pr()
+# eminem_forest %>% get_conf_mat()
 
 ```
 
 ``` {r forest mosaic}
-eminem_forest %>% get_conf_mat() %>% autoplot(type = "mosaic")
+matrix <-eminem_forest %>% get_conf_mat() %>% autoplot(type = "mosaic")
 ```
 
 
 ``` {r}
-workflow() %>% 
+important <-workflow() %>% 
   add_recipe(eminem_recipe) %>% 
   add_model(forest_model) %>% 
   fit(eminem_features) %>% 
@@ -374,6 +383,23 @@ workflow() %>%
 
 ```
 
+
+``` {r}
+
+lay <- rbind(c(1,1,1,1,2,2),
+             c(1,1,1,1,2,2),
+             c(1,1,1,1,2,2),
+             c(1,1,1,1,2,2),
+             c(NA),
+             c(NA,NA,3,3,3,3))
+grid.arrange(matrix, important, tableGrob(predi),layout_matrix = lay)
+
+```
+
+``` {r}
+grid.arrange(matrix, important, tableGrob(predi) ,nrow=2, ncol =2)
+
+```
 
 *** 
 
