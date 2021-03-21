@@ -23,6 +23,9 @@ library(cowplot)
 library(forcats)
 library(knitr)
 library(ggpubr)
+library(tidymodels)
+library(ggdendro)
+library(heatmaply)
 ```
 
 ``` {r get_playlist, include=FALSE}
@@ -239,6 +242,150 @@ mean_encore <- encore %>%
   )
 ```
 
+``` {r}
+get_conf_mat <- function(fit) {
+  outcome <- .get_tune_outcome_names(fit)
+  fit %>% 
+    collect_predictions() %>% 
+    conf_mat(truth = outcome, estimate = .pred_class)
+}
+
+```
+
+### Predicting a songs album
+``` {r}
+eminem_albums <-
+  bind_rows(
+    # shady_lp %>% mutate(playlist = "Shady_lp") %>% slice_head(n = 20),
+    # shadyxv %>% mutate(playlist = "Shady XV") %>% slice_head(n = 20),
+    # revival %>% mutate(playlist = "Revival") %>% slice_head(n = 20),
+    # relapse_refill %>% mutate(playlist = "Relapse refill") %>% slice_head(n = 20),
+    # relapse_deluxe %>% mutate(playlist = "Relapse Deluxe") %>% slice_head(n = 20),
+    recovery %>% mutate(playlist = "Recovery") %>% slice_head(n = 20),
+    # murdera %>% mutate(playlist = "Mustic to be murdered by A") %>% slice_head(n = 20),
+    # murderb %>% mutate(playlist = "Mustic to be murdered by B") %>% slice_head(n = 20),
+    eminemshow %>% mutate(playlist = "The Eminem Show") %>% slice_head(n = 20),
+    # matherlp %>% mutate(playlist = "Mather LP") %>% slice_head(n = 20),
+    matherlp2 %>% mutate(playlist = "Mather LP2") %>% slice_head(n = 20),
+    kamikaze %>% mutate(playlist = "Kamikaze") %>% slice_head(n = 20)
+    # encore %>% mutate(playlist = "Encore") %>% slice_head(n = 20)
+    
+  ) 
+```
+
+``` {r classify features}
+eminem_features <-
+  eminem_albums %>%  # For your portfolio, change this to the name of your corpus.
+  add_audio_analysis() %>% 
+  mutate(
+    playlist = factor(playlist),
+    segments = map2(segments, key, compmus_c_transpose),
+    pitches =
+      map(
+        segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      ),
+    timbre =
+      map(
+        segments,
+        compmus_summarise, timbre,
+        method = "mean",
+      )
+  ) %>%
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
+  mutate_at(vars(pitches, timbre), map, bind_rows) %>%
+  unnest(cols = c(pitches, timbre))
+
+```
+
+
+``` {r classify recipe}
+eminem_recipe <-
+  recipe(
+    playlist ~
+      danceability +
+      energy +
+      loudness +
+      speechiness +
+      acousticness +
+      instrumentalness +
+      liveness +
+      valence +
+      tempo +
+      duration +
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = eminem_features,          # Use the same name as the previous block.
+  ) %>%
+  step_center(all_predictors()) %>%
+  step_scale(all_predictors())      # Converts to z-scores.
+  # step_range(all_predictors())    # Sets range to [0, 1].
+```
+
+``` {r cross}
+eminem_cv <- eminem_features %>% vfold_cv(5)
+```
+
+
+``` {r forest}
+forest_model <-
+  rand_forest() %>%
+  set_mode("classification") %>% 
+  set_engine("ranger", importance = "impurity")
+eminem_forest <- 
+  workflow() %>% 
+  add_recipe(eminem_recipe) %>% 
+  add_model(forest_model) %>% 
+  fit_resamples(
+    eminem_cv, 
+    control = control_resamples(save_pred = TRUE)
+  )
+
+```
+
+``` {r forest pred}
+# eminem_forest %>% get_pr()
+
+```
+
+``` {r forest mosaic}
+eminem_forest %>% get_conf_mat() %>% autoplot(type = "mosaic")
+```
+
+
+``` {r}
+workflow() %>% 
+  add_recipe(eminem_recipe) %>% 
+  add_model(forest_model) %>% 
+  fit(eminem_features) %>% 
+  pluck("fit", "fit", "fit") %>%
+  ranger::importance() %>% 
+  enframe() %>% 
+  mutate(name = fct_reorder(name, value)) %>% 
+  ggplot(aes(name, value)) + 
+  geom_col() + 
+  coord_flip() +
+  theme_minimal() +
+  labs(x = NULL, y = "Importance")
+
+```
+
+
+*** 
+
+- For classification I chose four well known EMinem albums that have mean outliers in comparisson with its other albums. This selection has been made based on the interactive radarplot. 
+Recovery has a strong outlier in mean energy. The eminem Show has relatively high mean instrumentalness compared to the other albums. The marshal mathers LP has high mean energy and a high mean liveliness. Kamikaze has a high mean danceability. I expect my random forest to perform well based on these observations. It might struggle with recovery and the marshal amthers lp 2, since both of them score high on mean energy. For recipe I went with everything. 
+
+- The results are in line with my expectations, namely that the eminem show and recovery would classify well. I expected this, since their values stood out. I also expected to see an overlap between the amthers lp2 and recovery, since the energy of the LP is very similar to recovery. However I expected a clearer division, because of the liveliness difference. Interesting enough the points on which i found the classification would go aren't the most important features for our forest.
+
+- I believe this is due the outliers in every album that do not correspond with the mean values that can be seen in teh plot. The Eminem Show with the outlier in instrumentalness performs well and I think this is because of this outlier.
+
+
+
 ### Tempograms
 ``` {r load tempos, cache = TRUE}
 graveola <- get_tidy_audio_analysis("20oenBXlmwIfK0F3fQIjhM")
@@ -272,7 +419,7 @@ As you can see the cyclic vs non cyclic tempo analysis has a very different esti
 According to https://getsongbpm.com/song/kim/jq1ooB Kim has a BPM of 142, whcih is more in line with the
 cyclic estimation. I want to know what exactly casuses the differences between these estimation, so if you do please leave it in the review :).
 
-I chose for Kim, since it's an old song of eminem and can be seen as an outlier, since the song is critisized as going to far. Other songs i have tried where also more stable than this one, a possible explanation for this consistency could be the rap genre. Rap is often consistent in BPM, since the ruthm and beat is used to spit raps to, so clear lines where expected.
+I chose for Kim, since it's an old song of eminem and can be seen as an outlier, since the song is critisized as going lyrically to far. Other songs i have tried where also more stable than this one, a possible explanation for this consistency could be the rap genre. Rap is often consistent in BPM, since the rhythm and beat is used to spit raps to, so clear lines where expected.
 
 further more running the grams where intense for my machine by utilizing 100% of my ram for 30 minutes straight as seen in the attachment. I want to do more test runs, but before i do that i need to install more ram :)
 
