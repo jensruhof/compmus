@@ -260,202 +260,463 @@ get_pr <- function(fit) {
 }  
 ```
 
-### Predicting a songs album
+
+
+
+### Analysing Eminem
+
+This corpus focusses on the rapper Eminem and how his style has changed through the years. The corpus uses the [Eminem complete playlist](https://open.spotify.com/playlist/6E8sLG3bm1meTRj8n5l0ll?si=ANkMvh1bS8CkKOzdnhOrYA), by Eminem. The playlist spans from Eminems first song "Just dont give a fuck" from his The Slim Shady LP in 1998 to the single "The adventures of moon man and slim shady" in 2020.
+
+I chose this corpus, since Eminem is one of my favorite artists of all time. I find myself coming back to his songs on the regular and even went to his last tour in the Netherlands. Eminem has many singles and albums published through the years and all are surounded by some sort of controversy. Eminem even raps about the fact that some of his fans want the old slim shady back, but that he is not that person anymore. I want to check in what degree this statement holds when comparing his music through the years.
+
+Eminem's total of eleven studio albums make a great music library to compare on various aspects. In these albums Eminem changed up his rap game by collabing with pop artists, such as Ed SHeeran and Rihanna and release more poppy songs. I want to see if this has happened more later on or if he did this before as well. Furthermore Eminem is known for his many words per second in songs such as "rap god" or "Godzilla". Words aren't used by the spotify API, but I expect to see a coorelation between other features and words per minute. One of these features is speechiness, since it states in the description that "values between 33% and 66% suggest both music and speech (such as rap)" [spotify](https://developer.spotify.com/documentation/web-api/reference/#object-audiofeaturesobject).
+
+A possible weakness for the corpus might be the skits that Eminem puts in its albums. These aren't actually songs, but often help tell the story of the album. An example of this are the several Paul skits, wherein Eminem talks with his manager Paul.
+
+
+***
+
+
+Main focus points
+
+- Least popular songs of Eminem according to Spotify.
+
+- Most popular songs of Eminem according to Spotify.
+
+- Interactive radarchart of Spotify measurements on Eminem's songs.
+
+- Chromagram of the most popular song.
+
+- SSM's based on chroma and timbre for two songs with differing style.
+
+- Key vs Chordogram comparisson for two songs with differing style.
+
+- Tempogram of a fast-paced Eminem song.
+
+- Album predictions for 4 iconic albums.
+
+- Results
+
+![Eminem](/home/jensruhof/Documents/Computational_musicology/compmus2/eminem.jpg){width=100%}
+
+
+
+
+
+### Least popular
+
+``` {r} 
+LEAST <- Eminem %>% 
+  group_by(track.popularity) %>% 
+  filter(track.popularity <= 35) %>%
+  ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
+  geom_col(aes(fill = track.album.name)) +
+  labs(x= "Popularity") + 
+  ggtitle("What are the least popular Eminem songs?", "Popularity ranking < 35") +
+  theme(legend.position = "right",
+        legend.text = element_text( size = 10),
+        text = element_text(size = 10),
+        axis.title.y = element_blank())
+
+ggplotly(LEAST)
+```
+
+
+***
+
+
+#### Least popular Eminem songs
+
+- Eminem only has 17 'songs' that have a popularity of 35 or lower. Of these 17 'songs' only 2 are actually songs, namely "guts over fear" and "right for me".
+
+- The remaining 15 'songs' are often skits or intro's to his albums. These skits are often found as the first song on an album and are meant to introduce the listener to the album. The Paul skits are an example of this. These skits often feature a phone conversation between Eminem and his music manager Paul Rosenberg, in which the album or their relation at that time is featured.
+
+- The two songs that are part of Eminems least popular songs come from the same album
+Shady XV, which is often regarded as his worst album. Thus seeing atleast one song from this album here isn't surprising.
+
+### Most popular
+
 ``` {r}
-eminem_albums <-
-  bind_rows(
-    # shady_lp %>% mutate(playlist = "Shady_lp") %>% slice_head(n = 20),
-    # shadyxv %>% mutate(playlist = "Shady XV") %>% slice_head(n = 20),
-    # revival %>% mutate(playlist = "Revival") %>% slice_head(n = 20),
-    # relapse_refill %>% mutate(playlist = "Relapse refill") %>% slice_head(n = 20),
-    # relapse_deluxe %>% mutate(playlist = "Relapse Deluxe") %>% slice_head(n = 20),
-    recovery %>% mutate(playlist = "Recovery") %>% slice_head(n = 20),
-    # murdera %>% mutate(playlist = "Mustic to be murdered by A") %>% slice_head(n = 20),
-    # murderb %>% mutate(playlist = "Mustic to be murdered by B") %>% slice_head(n = 20),
-    eminemshow %>% mutate(playlist = "The Eminem Show") %>% slice_head(n = 20),
-    # matherlp %>% mutate(playlist = "Mather LP") %>% slice_head(n = 20),
-    matherlp2 %>% mutate(playlist = "Mather LP2") %>% slice_head(n = 20),
-    kamikaze %>% mutate(playlist = "Kamikaze") %>% slice_head(n = 20)
-    # encore %>% mutate(playlist = "Encore") %>% slice_head(n = 20)
-    
+most <- Eminem %>% 
+  group_by(track.popularity) %>% 
+  filter(track.popularity >= 75) %>%
+  ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
+  geom_col(aes(fill = track.album.name)) +
+  labs(x= "Popularity") + 
+  ggtitle("What are the most popular Eminem songs?", "Popularity ranking > 75") +
+  theme(legend.position = "right",
+        legend.text = element_text( size = 10),
+        text = element_text(size = 10),
+        axis.title.y = element_blank())
+
+ggplotly(most)
+```
+
+
+***
+
+
+#### Most popular Eminem songs
+- Eminem has 11 'songs' that have a popularity of 75 or higher. 
+
+- 9 of his 12 albums are featured in these graph. 
+
+- 3 albums have 2 songs featured. These are The Eminem Show, Recovery and The marshall mather LP. These albums are seen as his better albums, which is in line with the popularity measurement. 
+
+- Eminem presents the re-up (2006), ShadyXV(2014) and Revival(2017) aren't represented here.  The albums aren't considered his best and thus this isn't surprising.
+
+- His most popular song (Godzilla) is from one of his most recent albums, indicating that Eminem still puts out great music.
+
+
+### Radarplot
+
+``` {r}
+# test <- plot_ly(
+#   type = "scatterpolar",
+#   r= c(0.7129386,0.7213708,0.2985401,0.1928719,0.01342138,0.2951325,0.5395462),
+#   theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+#   fill = "toself"
+# )
+# test <- test %>%
+#   layout(
+#     polar = list(
+#       radialaxis = list(
+#         visible = T,
+#         range = c(0,1)
+#       )
+#     ),
+#     showlegend = F
+#   )
+# 
+# test
+fig <- plot_ly(
+    type = 'scatterpolar',
+    fill = 'toself'
   ) 
-```
-
-``` {r classify features}
-eminem_features <-
-  eminem_albums %>%  # For your portfolio, change this to the name of your corpus.
-  add_audio_analysis() %>% 
-  mutate(
-    playlist = factor(playlist),
-    segments = map2(segments, key, compmus_c_transpose),
-    pitches =
-      map(
-        segments,
-        compmus_summarise, pitches,
-        method = "mean", norm = "manhattan"
-      ),
-    timbre =
-      map(
-        segments,
-        compmus_summarise, timbre,
-        method = "mean",
+fig <- fig %>%
+  add_trace(
+    r = c(0.7129386, 0.7213708, 0.2985401, 0.1928719, 0.01342138, 0.2951325, 0.5395462),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Overall'
+  ) 
+fig <- fig %>%
+  add_trace(
+    r = c(0.7283333, 0.6116333, 0.39715, 0.2735885, 0.05342238, 0.3095833, 0.6580333),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Shady LP'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.6994286, 0.7866071, 0.240125, 0.1382441, 0.0007273875, 0.2240429, 0.5306786),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Shady XV'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.68, 0.7187368, 0.2828474, 0.26261, 5.927158e-05, 0.3540158, 0.5248947),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Revival'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.6959655, 0.7850345, 0.3074414, 0.2102438, 3.313793e-07, 0.3116, 0.558),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Relapse Refill'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.7161364, 0.7728636, 0.3247182, 0.2411955, 4.368182e-07, 0.3461591, 0.551),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Relapse Deluxe'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.6685294, 0.9168824, 0.2466588, 0.1525941, 1.3e-07, 0.3044941, 0.5481765),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Recovery'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.714, 0.66645, 0.219065, 0.1089275, 0.0003467275, 0.31603, 0.431345),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Music to be murdered by side A'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.7418056, 0.6893056, 0.2627111, 0.1610169, 0.0004116275, 0.3235917, 0.5114167),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Music to be murdered by side B'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.72035, 0.604985, 0.28606, 0.1263365, 0.04794438, 0.17504, 0.504715),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'The Eminem Show'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.7386667, 0.6762222, 0.3176167, 0.1434128, 1.096333e-05, 0.3192111, 0.5775444),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'The Marshal Mathers LP'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.679125, 0.8578125, 0.3076563, 0.2053562, 0.00239375, 0.4185125, 0.521),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'The Marshal Mathers LP2'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.7768462, 0.6326154, 0.3834615, 0.2434692, 0, 0.2661923, 0.5315385),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Kamikaze'
+  )
+fig <- fig %>%
+  add_trace(
+    r = c(0.701087, 0.646, 0.2990478, 0.2437839, 0.008007407, 0.2993522, 0.5071261),
+    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
+    name = 'Encore'
+  )
+fig <- fig %>%
+  layout(
+    polar = list(
+      radialaxis = list(
+        visible = T,
+        range = c(0,1)
       )
-  ) %>%
-  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
-  mutate_at(vars(pitches, timbre), map, bind_rows) %>%
-  unnest(cols = c(pitches, timbre))
-
-```
-
-
-``` {r classify recipe}
-eminem_recipe <-
-  recipe(
-    playlist ~
-      danceability +
-      energy +
-      loudness +
-      speechiness +
-      acousticness +
-      instrumentalness +
-      liveness +
-      valence +
-      tempo +
-      duration +
-      C + `C#|Db` + D + `D#|Eb` +
-      E + `F` + `F#|Gb` + G +
-      `G#|Ab` + A + `A#|Bb` + B +
-      c01 + c02 + c03 + c04 + c05 + c06 +
-      c07 + c08 + c09 + c10 + c11 + c12,
-    data = eminem_features,          # Use the same name as the previous block.
-  ) %>%
-  step_center(all_predictors()) %>%
-  step_scale(all_predictors())      # Converts to z-scores.
-  # step_range(all_predictors())    # Sets range to [0, 1].
-```
-
-``` {r cross}
-eminem_cv <- eminem_features %>% vfold_cv(5)
-```
-
-
-``` {r forest}
-forest_model <-
-  rand_forest() %>%
-  set_mode("classification") %>% 
-  set_engine("ranger", importance = "impurity")
-eminem_forest <- 
-  workflow() %>% 
-  add_recipe(eminem_recipe) %>% 
-  add_model(forest_model) %>% 
-  fit_resamples(
-    eminem_cv, 
-    control = control_resamples(save_pred = TRUE)
+    )
   )
 
-```
-
-``` {r forest pred}
-predi <-eminem_forest %>% get_pr()
-# eminem_forest %>% get_conf_mat()
-
-```
-
-``` {r forest mosaic}
-matrix <-eminem_forest %>% get_conf_mat() %>% autoplot(type = "mosaic")
+fig
 ```
 
 
-``` {r}
-important <-workflow() %>% 
-  add_recipe(eminem_recipe) %>% 
-  add_model(forest_model) %>% 
-  fit(eminem_features) %>% 
-  pluck("fit", "fit", "fit") %>%
-  ranger::importance() %>% 
-  enframe() %>% 
-  mutate(name = fct_reorder(name, value)) %>% 
-  ggplot(aes(name, value)) + 
-  geom_col() + 
-  coord_flip() +
+***
+
+
+#### Interactive radarchart containing all albums
+- NOTE: This is an interactive radarchart. Meaning that you can toggle albums on and off to get a better view of the different albums. Recommended albums to select are:
+his popular albums : Shady LP, Recovery, The mathers LP 1/2.
+His not so popular items compared to a popular one: Shady LP, ShadyXV, revival.
+
+- Looking at the popular albums they often spring out when comparing to the mean of all albums together a good example of this is recovery with a high mean_energy or the Shady LP with high speechiness.
+
+- Looking at the least popular albums, they don't spring out in comparission with the mean of all albums together. This could indicate that these albums weren't daring enough for Eminems audience. 
+
+- This isn't necesarrily true. When comparing the recent music to be murdered by albums with the overall means. Especially side B is inline with the overall mean, but still holds popular songs like 'GNAT' and is well received.
+
+
+### Chroma of Godzilla
+```{r}
+godzilla<-
+  get_tidy_audio_analysis("7FIWs0pqAYbP91WWM0vlTQ") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+```
+```{r}
+godzilla %>%
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
-  labs(x = NULL, y = "Importance")
+  scale_fill_viridis_c() +
+  ggtitle("Chroma sampling of Godzilla using euclidean") +
+  theme(title = element_text(size = 9))
 
 ```
 
-
-``` {r}
-
-lay <- rbind(c(1,1,1,1,2,2),
-             c(1,1,1,1,2,2),
-             c(1,1,1,1,2,2),
-             c(1,1,1,1,2,2),
-             c(NA),
-             c(NA,NA,3,3,3,3))
-grid.arrange(matrix, important, tableGrob(predi),layout_matrix = lay)
-
-```
-
-``` {r}
-grid.arrange(matrix, important, tableGrob(predi) ,nrow=2, ncol =2)
-
-```
-
-*** 
-
-- For classification I chose four well known EMinem albums that have mean outliers in comparisson with its other albums. This selection has been made based on the interactive radarplot. 
-Recovery has a strong outlier in mean energy. The eminem Show has relatively high mean instrumentalness compared to the other albums. The marshal mathers LP has high mean energy and a high mean liveliness. Kamikaze has a high mean danceability. I expect my random forest to perform well based on these observations. It might struggle with recovery and the marshal amthers lp 2, since both of them score high on mean energy. For recipe I went with everything. 
-
-- The results are in line with my expectations, namely that the eminem show and recovery would classify well. I expected this, since their values stood out. I also expected to see an overlap between the amthers lp2 and recovery, since the energy of the LP is very similar to recovery. However I expected a clearer division, because of the liveliness difference. Interesting enough the points on which i found the classification would go aren't the most important features for our forest.
-
-- I believe this is due the outliers in every album that do not correspond with the mean values that can be seen in teh plot. The Eminem Show with the outlier in instrumentalness performs well and I think this is because of this outlier.
+***
 
 
+#### Godzilla (feat. Juice WRLD)
 
-### Tempograms
-``` {r load tempos, cache = TRUE}
-graveola <- get_tidy_audio_analysis("20oenBXlmwIfK0F3fQIjhM")
+- This is a chromagram of the song Godzilla(feat. Juice WRLD). This song is the most popular song of Eminem and is all over the place. However, there are certain lines that are repeated throughout the process, namely: **C#|Db** , **D#|Eb** and **F#|Gb**. These lines show alternating magnitude intensity the most with a few exceptions. E.g. the **A#|Bb** line that sometimes has a magnitude of 1 aswell.
 
-cyclic <- graveola %>%
-  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
-  ggplot(aes(x = time, y = bpm, fill = power)) +
-  geom_raster() +
-  scale_fill_viridis_c(guide = "none") +
-  labs(x = "Time (s)", y = "Tempo (BPM)") +
-  theme_classic()
+- Gozilla consists of Eminem and Juice WRLD rapping over an electronic umph that comes in steps of 3. These can be linked to the 3 main lines we see alternating in the cordogram. Another thing to note is that the magnitude lines are very thin. This is because Godzilla has a BPM of 166.
 
-non_cyclic <- graveola %>%
-  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
-  ggplot(aes(x = time, y = bpm, fill = power)) +
-  geom_raster() +
-  scale_fill_viridis_c(guide = "none") +
-  labs(x = "Time (s)", y = "Tempo (BPM)") +
-  theme_classic()
-
-```
-
-``` {r plotting, cache = TRUE}
-grid.arrange (arrangeGrob(cyclic, top=grid::textGrob("cyclic", hjust = 0.15), left="Kim"),arrangeGrob(non_cyclic,top=grid::textGrob("non-cyclic", hjust = 0.21)),ncol=2, nrow=1, widths = c(2.2,2))
-```
+- Around the 160 second mark Eminem starts his staggering 10.65 syllables per second rap. This can be seen in the chromagram, since it is being introduced by a lower sound that is played for multiple seconds before he begins.
+ 
 
 
 ***
 
-As you can see the cyclic vs non cyclic tempo analysis has a very different estimation of BPM.
-According to https://getsongbpm.com/song/kim/jq1ooB Kim has a BPM of 142, whcih is more in line with the
-cyclic estimation. I want to know what exactly casuses the differences between these estimation, so if you do please leave it in the review :).
 
-I chose for Kim, since it's an old song of eminem and can be seen as an outlier, since the song is critisized as going lyrically to far. Other songs i have tried where also more stable than this one, a possible explanation for this consistency could be the rap genre. Rap is often consistent in BPM, since the rhythm and beat is used to spit raps to, so clear lines where expected.
+```{=html}
+<object data="https://open.spotify.com/embed/track/7FIWs0pqAYbP91WWM0vlTQ" width="280" height="140">
+    <embed src="https://open.spotify.com/embed/track/7FIWs0pqAYbP91WWM0vlTQ" width="280" height="140"></embed>
+</object>
+```
 
-further more running the grams where intense for my machine by utilizing 100% of my ram for 30 minutes straight as seen in the attachment. I want to do more test runs, but before i do that i need to install more ram :)
+
+### SSM of Mockingbird and Tone deaf compared
+
+```{r ssm info}
+mockingbird <-
+  get_tidy_audio_analysis("0KOYV2jgRZWLcLI94kiscs") %>% # Change URI.
+  compmus_align(bars, segments) %>%                     # Change `bars`
+  select(bars) %>%                                      #   in all three
+  unnest(bars) %>%                                      #   of these lines.
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"              # Change summary & norm.
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"              # Change summary & norm.
+      )
+  )
+tone <-
+  get_tidy_audio_analysis("1cEUi8QulMj1xgrPwwGC2p") %>% # Change URI.
+  compmus_align(bars, segments) %>%                     # Change `bars`
+  select(bars) %>%                                      #   in all three
+  unnest(bars) %>%                                      #   of these lines.
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "rms", norm = "manhattan"              # Change summary & norm.
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"              # Change summary & norm.
+      )
+  )
+```
+
+```{r ssm plots}
+op <- mockingbird %>%
+  compmus_self_similarity(pitches, "manhattan") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_x_continuous(breaks = seq(0, 266.424, by = 60)) +
+  scale_y_continuous(breaks = seq(0, 266.424, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+ot <- mockingbird %>%
+  compmus_self_similarity(timbre, "euclidean") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_x_continuous(breaks = seq(0, 266.424, by = 60)) +
+  scale_y_continuous(breaks = seq(0, 266.424, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+rp <- tone %>%
+  compmus_self_similarity(pitches, "aitchison") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_x_continuous(breaks = seq(0, 282.581, by = 60)) +
+  scale_y_continuous(breaks = seq(0, 282.812, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+rt <- tone %>%
+  compmus_self_similarity(timbre, "euclidean") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_x_continuous(breaks = seq(0, 282.812, by = 60)) +
+  scale_y_continuous(breaks = seq(0, 282.812, by = 60)) +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "")
+```
+
+```{r ssm grid}
+grid.arrange (arrangeGrob(op, top=grid::textGrob("Mockingbird", hjust = 0.15), left="Chroma"),arrangeGrob(rp,top=grid::textGrob("Tone deaf", hjust = 0.21)),arrangeGrob(ot, left="Timbre"),rt,ncol=2, nrow=2, widths = c(2.2,2) ,heights = c(2.2,2), top=grid::textGrob("SSM, based on bars, time in seconds", hjust= 0.42))
+```
+
 
 
 ***
 
-![Eminem](/home/jensruhof/Documents/Computational_musicology/compmus2/struggle.jpg){width=100%}
+
+#### Timbre and Chroma comparisson
 
 
-### Key vs chorodgram analysis of Mockingbird vs outlier Tone deaf
+- These Self Similarity matrices (SSM) are segmented by bars. The Mockingbird SSM's make use of the mean and manhattan distance, whereas the Tone deaf SSM for pitches uses rms and manahttan and for timbre the mean.
+
+- The left side of the figure shows the chroma and timbre of Mockingbird. The chroma SSM shows several blocks, but aren't that clear. In the timbre based SSM these blocks become more obvious. Around the 90 seconds mark a clear switch can be seen. This is where the chorus of mockingbird starts and more instruments chime in. 
+
+- The right side of the figure shows the chroma and timbre of tone deaf. The song tone deaf is very different from his usual style, the beat stays consistent, which can be seen by the diagonal line. In tone deaf Eminem remains at the same rithm the entire time and there aren't any other instruments used. This can be seen in the SSM's by the lack of patterns. 
+
+
+
+***
+
+
+```{=html}
+<object data="https://open.spotify.com/embed/track/561jH07mF1jHuk7KlaeF0s" width="280" height="140">
+    <embed src="https://open.spotify.com/embed/track/561jH07mF1jHuk7KlaeF0s" width="280" height="140"></embed>
+</object>
+```
+
+```{=html}
+<object data="https://open.spotify.com/embed/track/1cEUi8QulMj1xgrPwwGC2p" width="280" height="140">
+    <embed src="https://open.spotify.com/embed/track/1cEUi8QulMj1xgrPwwGC2p" width="280" height="140"></embed>
+</object>
+```
+
+
+
+
+
+### Key vs chorodgram analysis of Mockingbird vs Tone deaf
 
 ``` {r get_chors}
 circshift <- function(v, n) {
@@ -670,9 +931,6 @@ tk <- tone_key %>%
 
 ```
 
-
-
-
 ```{r chord_key_grid}
 grid.arrange (arrangeGrob(mbc, top=grid::textGrob("Mockingbird", hjust = 0.15), left="Chord"),arrangeGrob(tc,top=grid::textGrob("Tone deaf", hjust = 0.21)),arrangeGrob(mbk, left="Key"),tk,ncol=2, nrow=2, widths = c(2.2,2) ,heights = c(2.2,2))
 # ggarrange(mbc, tc, mbk, tk + rremove("x.text"),
@@ -680,517 +938,245 @@ grid.arrange (arrangeGrob(mbc, top=grid::textGrob("Mockingbird", hjust = 0.15), 
 ```
 
 
-
-
 ***
 
 #### Explanation of Mockingbird and Tone deaf.
 
-- The keygram for mockingbird is a lot clearer than the chordogram, Mockingbird is know for its piano play, which you can clearly follow over time.
-- The grams for tone deaf are totally different and don't seem correct. However tone deaf is I believe the only number of eminem where he doesn't change his sound throughout the song. The interesting thing woth tone deaf is that the same chords are repeated the entire length of the song. 
+- The key and chordogram of mockingbird are all over the place. This is expected, since Mockingbird is known for its piano. The keygram shows the altering keys of the piano well over time. 
+
+- Tone deaf howeber gives a very consistent result. The chordogram shows several blue lines which can be linked to the steady beat of tone dead. When looking at the keygram we see that many of these lighter lines are removed with a strong focus on the main two lines, which can be explained by the metronomish sound seen in Tone deaf.
+
+
+***
+
+
+```{=html}
+<object data="https://open.spotify.com/embed/track/561jH07mF1jHuk7KlaeF0s" width="280" height="140">
+    <embed src="https://open.spotify.com/embed/track/561jH07mF1jHuk7KlaeF0s" width="280" height="140"></embed>
+</object>
+```
+
+```{=html}
+<object data="https://open.spotify.com/embed/track/1cEUi8QulMj1xgrPwwGC2p" width="280" height="140">
+    <embed src="https://open.spotify.com/embed/track/1cEUi8QulMj1xgrPwwGC2p" width="280" height="140"></embed>
+</object>
+```
 
 
 
-### timbre and self similarity
 
-```{r ssm info}
-mockingbird <-
-  get_tidy_audio_analysis("0KOYV2jgRZWLcLI94kiscs") %>% # Change URI.
-  compmus_align(bars, segments) %>%                     # Change `bars`
-  select(bars) %>%                                      #   in all three
-  unnest(bars) %>%                                      #   of these lines.
+
+### Tempograms
+``` {r load tempos, cache = TRUE}
+graveola <- get_tidy_audio_analysis("20oenBXlmwIfK0F3fQIjhM")
+
+cyclic <- graveola %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+non_cyclic <- graveola %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+```
+
+``` {r plotting, cache = TRUE}
+grid.arrange (arrangeGrob(cyclic, top=grid::textGrob("cyclic", hjust = 0.15), left="Kim"),arrangeGrob(non_cyclic,top=grid::textGrob("non-cyclic", hjust = 0.21)),ncol=2, nrow=1, widths = c(2.2,2))
+```
+
+
+***
+
+As you can see the cyclic vs non-cyclic tempo analysis has a very different estimation of BPM.
+According to [get bpm](https://getsongbpm.com/song/kim/jq1ooB) Kim has a BPM of 142, which is more in line with the
+cyclic estimation. The non-cyclic tempogram shows a tempo twice as high as the cyclic tempogram. A possible explanation for this is that most of the energy in a song occurs twice per beat and the cyclic tempogram does some correction, whereas the non-cyclic doesn't do this.
+
+I chose for Kim, since it's an old song of Eminem and can be seen as an outlier, since the song is criticized as going lyrically to far.
+Other sings i have tried showed an even more stabled rhythm, this steady beat could be explained by the use it has in the rap genre. It is much easier to rap in a consistent tempo. Eminem often raps 2 or 4 notes per beat.
+Other songs i have tried where also more stable than this one, a possible explanation for this consistency could be the rap genre. Rap is often consistent in BPM, since the rhythm and beat is used to spit raps to, so clear lines where expected.
+
+
+***
+
+
+```{=html}
+<object data="https://open.spotify.com/embed/track/20oenBXlmwIfK0F3fQIjhM" width="280" height="140">
+    <embed src="https://open.spotify.com/embed/track/20oenBXlmwIfK0F3fQIjhM" width="280" height="140"></embed>
+</object>
+```
+
+
+### Predicting a songs album
+``` {r}
+eminem_albums <-
+  bind_rows(
+    # shady_lp %>% mutate(playlist = "Shady_lp") %>% slice_head(n = 20),
+    # shadyxv %>% mutate(playlist = "Shady XV") %>% slice_head(n = 20),
+    # revival %>% mutate(playlist = "Revival") %>% slice_head(n = 20),
+    # relapse_refill %>% mutate(playlist = "Relapse refill") %>% slice_head(n = 20),
+    # relapse_deluxe %>% mutate(playlist = "Relapse Deluxe") %>% slice_head(n = 20),
+    recovery %>% mutate(playlist = "Recovery") %>% slice_head(n = 20),
+    # murdera %>% mutate(playlist = "Mustic to be murdered by A") %>% slice_head(n = 20),
+    # murderb %>% mutate(playlist = "Mustic to be murdered by B") %>% slice_head(n = 20),
+    eminemshow %>% mutate(playlist = "The Eminem Show") %>% slice_head(n = 20),
+    # matherlp %>% mutate(playlist = "Mather LP") %>% slice_head(n = 20),
+    matherlp2 %>% mutate(playlist = "Mather LP2") %>% slice_head(n = 20),
+    kamikaze %>% mutate(playlist = "Kamikaze") %>% slice_head(n = 20)
+    # encore %>% mutate(playlist = "Encore") %>% slice_head(n = 20)
+    
+  ) 
+```
+
+``` {r classify features}
+eminem_features <-
+  eminem_albums %>%  # For your portfolio, change this to the name of your corpus.
+  add_audio_analysis() %>% 
   mutate(
+    playlist = factor(playlist),
+    segments = map2(segments, key, compmus_c_transpose),
     pitches =
-      map(segments,
+      map(
+        segments,
         compmus_summarise, pitches,
-        method = "mean", norm = "manhattan"              # Change summary & norm.
+        method = "mean", norm = "manhattan"
+      ),
+    timbre =
+      map(
+        segments,
+        compmus_summarise, timbre,
+        method = "mean",
       )
   ) %>%
-  mutate(
-    timbre =
-      map(segments,
-        compmus_summarise, timbre,
-        method = "mean"              # Change summary & norm.
-      )
-  )
-tone <-
-  get_tidy_audio_analysis("1cEUi8QulMj1xgrPwwGC2p") %>% # Change URI.
-  compmus_align(bars, segments) %>%                     # Change `bars`
-  select(bars) %>%                                      #   in all three
-  unnest(bars) %>%                                      #   of these lines.
-  mutate(
-    pitches =
-      map(segments,
-        compmus_summarise, pitches,
-        method = "rms", norm = "manhattan"              # Change summary & norm.
-      )
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
+  mutate_at(vars(pitches, timbre), map, bind_rows) %>%
+  unnest(cols = c(pitches, timbre))
+
+```
+
+
+``` {r classify recipe}
+eminem_recipe <-
+  recipe(
+    playlist ~
+      danceability +
+      energy +
+      loudness +
+      speechiness +
+      acousticness +
+      instrumentalness +
+      liveness +
+      valence +
+      tempo +
+      duration +
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = eminem_features,          # Use the same name as the previous block.
   ) %>%
-  mutate(
-    timbre =
-      map(segments,
-        compmus_summarise, timbre,
-        method = "mean"              # Change summary & norm.
-      )
+  step_center(all_predictors()) %>%
+  step_scale(all_predictors())      # Converts to z-scores.
+  # step_range(all_predictors())    # Sets range to [0, 1].
+```
+
+``` {r cross}
+eminem_cv <- eminem_features %>% vfold_cv(5)
+```
+
+
+``` {r forest}
+forest_model <-
+  rand_forest() %>%
+  set_mode("classification") %>% 
+  set_engine("ranger", importance = "impurity")
+eminem_forest <- 
+  workflow() %>% 
+  add_recipe(eminem_recipe) %>% 
+  add_model(forest_model) %>% 
+  fit_resamples(
+    eminem_cv, 
+    control = control_resamples(save_pred = TRUE)
   )
+
 ```
 
-```{r ssm plots}
-op <- mockingbird %>%
-  compmus_self_similarity(pitches, "manhattan") %>% 
-  ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
-  ) +
-  geom_tile() +
-  coord_fixed() +
-  scale_x_continuous(breaks = seq(0, 266.424, by = 60)) +
-  scale_y_continuous(breaks = seq(0, 266.424, by = 60)) +
-  scale_fill_viridis_c(guide = "none") +
-  theme_classic() +
-  labs(x = "", y = "")
-ot <- mockingbird %>%
-  compmus_self_similarity(timbre, "euclidean") %>% 
-  ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
-  ) +
-  geom_tile() +
-  coord_fixed() +
-  scale_x_continuous(breaks = seq(0, 266.424, by = 60)) +
-  scale_y_continuous(breaks = seq(0, 266.424, by = 60)) +
-  scale_fill_viridis_c(guide = "none") +
-  theme_classic() +
-  labs(x = "", y = "")
-rp <- tone %>%
-  compmus_self_similarity(pitches, "aitchison") %>% 
-  ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
-  ) +
-  geom_tile() +
-  coord_fixed() +
-  scale_x_continuous(breaks = seq(0, 282.581, by = 60)) +
-  scale_y_continuous(breaks = seq(0, 282.812, by = 60)) +
-  scale_fill_viridis_c(guide = "none") +
-  theme_classic() +
-  labs(x = "", y = "")
-rt <- tone %>%
-  compmus_self_similarity(timbre, "euclidean") %>% 
-  ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
-  ) +
-  geom_tile() +
-  coord_fixed() +
-  scale_x_continuous(breaks = seq(0, 282.812, by = 60)) +
-  scale_y_continuous(breaks = seq(0, 282.812, by = 60)) +
-  scale_fill_viridis_c(guide = "none") +
-  theme_classic() +
-  labs(x = "", y = "")
+``` {r forest pred}
+predi <-eminem_forest %>% get_pr()
+# eminem_forest %>% get_conf_mat()
+
 ```
 
-```{r ssm grid}
-grid.arrange (arrangeGrob(op, top=grid::textGrob("Mockingbird", hjust = 0.15), left="Chroma"),arrangeGrob(rp,top=grid::textGrob("Tone deaf", hjust = 0.21)),arrangeGrob(ot, left="Timbre"),rt,ncol=2, nrow=2, widths = c(2.2,2) ,heights = c(2.2,2), top=grid::textGrob("SSM, based on bars, time in seconds", hjust= 0.42))
+``` {r forest mosaic}
+matrix <-eminem_forest %>% get_conf_mat() %>% autoplot(type = "mosaic")
 ```
 
-
-
-***
-
-#### week8 text
-
-- figure 1 shows Self-similarity matrices, segmented by bars, with the axes in seconds of the song mockingbird. The timbre based matrix expresses the blocks that can also be seen in chroma more vividly.  around the 90 second mark you see a switch with the timbre, this is also where the refrain of mockingbird starts and more instruments chime in. around the 300 mark the songe ends which can be seen in the chroma matrix, if you look at the crossing yellow lines.
-- In figure 2 I wanted to see if a number by Eminem called Tone deaf would yield interesting or different results, and it sure did. This number is one of the few songs of Eminem where the beat stays consistent and the matrices show this.
-
-
-
-
-
-### Introduction
-
-TODO: Tekst readme plakken
-Computational musicology Corpus idea:
-
-How did famous rapper Eminem's style change through te years. From his firsts single "I just dont give a f*ck" in 1998 to one of hist latest songs "The adventures of moon man and slim shady" in 2020.
-
-I chose this corpus, since Eminem is one of my favorite artists of all time. I find myself coming back to his songs on the regular and even went to his last tour in the Netherlands. Eminem has many singles and albums published through the years and all are surounded by some sort of controversion. Eminem even raps about the fact that some of his fans want the old slim shady back, but that he is not that person anymore. I want to check in what degree this statement holds when comparing his music through the years.
-
-Eminem's total of eleven studio albums make a great music library to compare on various aspects. In these albums Eminem changed up his rap game by collabing with artist and go for a more mainstream pop song. I want to see if this has happened more later on or if he did this before as well. Furthermore eminem is known for his many words per second in songs such as "rap god" or "Godzilla"
-
-A possiblie weakness for the corpus might eb that some songs appear on multiple albums. On the one hand this shows that an artist is proud of a certain song and places it in more places. On the other hand i might have to look at the representations of these songs, to not get an unfair advantage or skew the data.
-
-***
-
-Main focus points
-
-- Least popular songs
-
-- Most popular songs
-
-- Interactive radarchart of spotify measurements on eminem
-
-- Chroma feature example of my favourtite eminem song.
-
-
-***
-
-![Eminem](/home/jensruhof/Documents/Computational_musicology/compmus2/eminem.jpg){width=100%}
-
-
-
-
-
-### Least popular
-
-<!-- # ```{r} -->
-<!-- # library(d3heatmap) -->
-<!-- # d3heatmap(mtcars, scale="column", colors="Blues") -->
-<!-- # ``` -->
-``` {r} 
-LEAST <- Eminem %>% 
-  group_by(track.popularity) %>% 
-  filter(track.popularity <= 35) %>%
-  ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
-  geom_col(aes(fill = track.album.name)) +
-  labs(x= "Popularity") + 
-  ggtitle("What are the least popular Eminem songs?", "Popularity ranking < 35") +
-  theme(legend.position = "right",
-        legend.text = element_text( size = 10),
-        text = element_text(size = 10),
-        axis.title.y = element_blank())
-
-ggplotly(LEAST)
-```
-
-***
-
-#### Least popular songs
-
-A thing to note already is that the paul skit appears on multiple albums and 
-that his skits often aren't very popular. A reason for this could be that these 
-skits aren't songs and are often a story within the album. An example is the 
-paul skit or skits I should say. These skits, since there are multiple named 
-Paul are a reference to his music manager Paul Rosenberg in which eminem often 
-features a snippet of a phone conversation with some information about the album.
-
-
-### Most popular
 
 ``` {r}
-most <- Eminem %>% 
-  group_by(track.popularity) %>% 
-  filter(track.popularity >= 75) %>%
-  ggplot(aes(x =track.popularity , y = fct_reorder(track.name, track.popularity))) + 
-  geom_col(aes(fill = track.album.name)) +
-  labs(x= "Popularity") + 
-  ggtitle("What are the most popular Eminem songs?", "Popularity ranking > 75") +
-  theme(legend.position = "right",
-        legend.text = element_text( size = 10),
-        text = element_text(size = 10),
-        axis.title.y = element_blank())
-
-ggplotly(most)
-```
-
-***
-
-#### Most popular songs of Eminem
-An interesting thing to see here is that all of his major albums have at least one song with a high popularity with personally one of his best albums "recovery" having two in it. I would like to delve into popularity per album and compare the populartiy with other things spotify measures later on.
-
-### Radarplot
-
-``` {r}
-# test <- plot_ly(
-#   type = "scatterpolar",
-#   r= c(0.7129386,0.7213708,0.2985401,0.1928719,0.01342138,0.2951325,0.5395462),
-#   theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-#   fill = "toself"
-# )
-# test <- test %>%
-#   layout(
-#     polar = list(
-#       radialaxis = list(
-#         visible = T,
-#         range = c(0,1)
-#       )
-#     ),
-#     showlegend = F
-#   )
-# 
-# test
-fig <- plot_ly(
-    type = 'scatterpolar',
-    fill = 'toself'
-  ) 
-fig <- fig %>%
-  add_trace(
-    r = c(0.7129386, 0.7213708, 0.2985401, 0.1928719, 0.01342138, 0.2951325, 0.5395462),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Overall'
-  ) 
-fig <- fig %>%
-  add_trace(
-    r = c(0.7283333, 0.6116333, 0.39715, 0.2735885, 0.05342238, 0.3095833, 0.6580333),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Shady LP'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.6994286, 0.7866071, 0.240125, 0.1382441, 0.0007273875, 0.2240429, 0.5306786),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Shady XV'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.68, 0.7187368, 0.2828474, 0.26261, 5.927158e-05, 0.3540158, 0.5248947),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Revival'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.6959655, 0.7850345, 0.3074414, 0.2102438, 3.313793e-07, 0.3116, 0.558),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Relapse Refill'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.7161364, 0.7728636, 0.3247182, 0.2411955, 4.368182e-07, 0.3461591, 0.551),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Relapse Deluxe'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.6685294, 0.9168824, 0.2466588, 0.1525941, 1.3e-07, 0.3044941, 0.5481765),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Recovery'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.714, 0.66645, 0.219065, 0.1089275, 0.0003467275, 0.31603, 0.431345),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Music to be murdered by side A'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.7418056, 0.6893056, 0.2627111, 0.1610169, 0.0004116275, 0.3235917, 0.5114167),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Music to be murdered by side B'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.72035, 0.604985, 0.28606, 0.1263365, 0.04794438, 0.17504, 0.504715),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'The Eminem Show'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.7386667, 0.6762222, 0.3176167, 0.1434128, 1.096333e-05, 0.3192111, 0.5775444),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'The Marshal Mathers LP'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.679125, 0.8578125, 0.3076563, 0.2053562, 0.00239375, 0.4185125, 0.521),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'The Marshal Mathers LP2'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.7768462, 0.6326154, 0.3834615, 0.2434692, 0, 0.2661923, 0.5315385),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Kamikaze'
-  )
-fig <- fig %>%
-  add_trace(
-    r = c(0.701087, 0.646, 0.2990478, 0.2437839, 0.008007407, 0.2993522, 0.5071261),
-    theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"),
-    name = 'Encore'
-  )
-fig <- fig %>%
-  layout(
-    polar = list(
-      radialaxis = list(
-        visible = T,
-        range = c(0,1)
-      )
-    )
-  )
-
-fig
-```
-
-***
-
-#### This is a radarchart which represents all the mean values of eminems songs.
-
-- It is interesting that instrumentalness is almost non-existent.
-
-- Energy and danceability are high.
-
-- Speechiness is low, this can be explained by eminemns gimmick. Namely rapping very fast, which is hard to replicate.
-- Most of his albums share the same charcteristics, mainly differing in energy.
-
-
-
-
-### Chroma of Mockingbird
-
-```{r}
-mockingbird<-
-  get_tidy_audio_analysis("561jH07mF1jHuk7KlaeF0s") %>%
-  select(segments) %>%
-  unnest(segments) %>%
-  select(start, duration, pitches)
-
-```
-```{r}
-mockingbird %>%
-  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
-  compmus_gather_chroma() %>% 
-  ggplot(
-    aes(
-      x = start + duration / 2,
-      width = duration,
-      y = pitch_class,
-      fill = value
-    )
-  ) +
-  geom_tile() +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+important <-workflow() %>% 
+  add_recipe(eminem_recipe) %>% 
+  add_model(forest_model) %>% 
+  fit(eminem_features) %>% 
+  pluck("fit", "fit", "fit") %>%
+  ranger::importance() %>% 
+  enframe() %>% 
+  mutate(name = fct_reorder(name, value)) %>% 
+  ggplot(aes(name, value)) + 
+  geom_col() + 
+  coord_flip() +
   theme_minimal() +
-  scale_fill_viridis_c() +
-  ggtitle("Chroma sampling of Mockingbird using euclidean") +
-  theme(title = element_text(size = 9))
+  labs(x = NULL, y = "Importance")
 
 ```
 
-***
 
-#### Mocking bird
+``` {r}
 
-- Mostly played in C D and E
+lay <- rbind(c(1,1,1,1,2,2),
+             c(1,1,1,1,2,2),
+             c(1,1,1,1,2,2),
+             c(1,1,1,1,2,2),
+             c(NA),
+             c(NA,NA,3,3,3,3))
+grid.arrange(matrix, important, tableGrob(predi),layout_matrix = lay)
+
+```
+
+``` {r}
+grid.arrange(matrix, important, tableGrob(predi) ,nrow=2, ncol =2)
+
+```
+
+*** 
+
+- For classification I chose four well known EMinem albums that have mean outliers in comparisson with its other albums. This selection has been made based on the interactive radarplot. 
+Recovery has a strong outlier in mean energy. The eminem Show has relatively high mean instrumentalness compared to the other albums. The marshal mathers LP has high mean energy and a high mean liveliness. Kamikaze has a high mean danceability. I expect my random forest to perform well based on these observations. It might struggle with recovery and the marshal amthers lp 2, since both of them score high on mean energy. For recipe I went with everything. 
+
+- The results are in line with my expectations, namely that the eminem show and recovery would classify well. I expected this, since their values stood out. I also expected to see an overlap between the amthers lp2 and recovery, since the energy of the LP is very similar to recovery. However I expected a clearer division, because of the liveliness difference. Interesting enough the points on which i found the classification would go aren't the most important features for our forest.
+
+- I believe this is due the outliers in every album that do not correspond with the mean values that can be seen in teh plot. The Eminem Show with the outlier in instrumentalness performs well and I think this is because of this outlier.
+
+
 
 
 ### Results
 
-***
-#### Notable things
+Eminem has changed through the years, but his style not so much. In recent years many people asked for the real slim shady back. However he was never realy gone. It is true that some of his albums weren't in the unique Eminem style, but that isn't something that only happened in the 2010-2020s. Eminem has 3 albums that have flopped in comparisson with his succesfull albums , namely Eminem presents the Re-Up, ShadyXV and revival. However when looking at the release date of these albums they are spread out over the course of his career. 
+Another thing to note is that critics didn't like Eminems first albums at first, but changed their opinion over time.  After the flopped albums ShadyXV and Revival many people said that Eminem has lost his touch, but with his three most recent albums (Kamikaze, Music to be murderd by, Music to be murdered by side B) he proved the haters wrong. 
 
-- Many skits are not popular, still eminem keeps them in his album. This might be since most albums have a story behind them and the skit shows some light on this backstory. An example is the skits with his manager Paul.
+What i have learned throughout this course is that people can say a lot about an artist, without substantial evidence to back it up. Eminems style has changed, but not necesarily for the worst. One could even argue that he needed the critique to get back on the top of his game. Every artist has tracks people dislike and that is okay. 
 
-- Most of his big albums have atleast one popular song. indicating that he is still performing well even after all those years.
+Furthermore at the start of this project I expected clearer differences between albums and songs. Even when looking at other corpi there weren't as many extremities as I had expected. his concludes me that looking at song features can give certain insights, but is not as complete or important as i had thought. The experience you feel when listening to music can't be seen in these measurements, since that differs per listener. 
 
-- WHat i still want to do is comapare different albums, especially one of his first vs one of his last and see if there are big differences between them. Sugestions on visualisation are welcome :)
+The conclusion we draw is that every artist has its up and downs and that this is necesary in order to create their own style. Feature selection doesn't necesarily say everything, but it can give an estimation or guideline in what a listener sees as important or as good music. No artist or Listener should hold these features as the gold standard of their listening style, since I myself like one of Eminems Least popular songs (guts over fear) and Eminems most popular song (Godzilla) isn't my favourite.
 
-
-
-
-<!-- # ``` {r} -->
-<!-- # fig <- plot_ly( -->
-<!-- #     type = 'scatterpolar', -->
-<!-- #     fill = 'toself' -->
-<!-- #   )  -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.7129386, 0.7213708, 0.2985401, 0.1928719, 0.01342138, 0.2951325, 0.5395462), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Overall' -->
-<!-- #   )  -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.7283333, 0.6116333, 0.39715, 0.2735885, 0.05342238, 0.3095833, 0.6580333), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Shady LP' -->
-<!-- #   ) -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.6994286, 0.7866071, 0.240125, 0.1382441, 0.0007273875, 0.2240429, 0.5306786), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Shady XV' -->
-<!-- #   ) -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.68, 0.7187368, 0.2828474, 0.26261, 5.927158e-05, 0.3540158, 0.5248947), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Revival' -->
-<!-- #   ) -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.6959655, 0.7850345, 0.3074414, 0.2102438, 3.313793e-07, 0.3116, 0.558), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Relapse Refill' -->
-<!-- #   ) -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.7161364, 0.7728636, 0.3247182, 0.2411955, 4.368182e-07, 0.3461591, 0.551), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Relapse Deluxe' -->
-<!-- #   ) -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.6685294, 0.9168824, 0.2466588, 0.1525941, 1.3e-07, 0.3044941, 0.5481765), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Recovery' -->
-<!-- #   ) -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.714, 0.66645, 0.219065, 0.1089275, 0.0003467275, 0.31603, 0.431345), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Music to be murdered by side A' -->
-<!-- #   ) -->
-<!-- # fig <- fig %>% -->
-<!-- #   add_trace( -->
-<!-- #     r = c(0.7418056, 0.6893056, 0.2627111, 0.1610169, 0.0004116275, 0.3235917, 0.5114167), -->
-<!-- #     theta = c("mean_danceability", "mean_energy", "mean_speechiness", "mean_acousticness","mean_instrumentalness", "mean_liveness", "mean_valence"), -->
-<!-- #     name = 'Music to be murdered by side B' -->
-<!-- #   ) -->
-<!-- # fig <- fig %>% -->
-<!-- #   layout( -->
-<!-- #     polar = list( -->
-<!-- #       radialaxis = list( -->
-<!-- #         visible = T, -->
-<!-- #         range = c(0,1) -->
-<!-- #       ) -->
-<!-- #     ) -->
-<!-- #   ) -->
-<!-- #  -->
-<!-- # fig -->
-<!-- #  -->
-<!-- # ``` -->
-<!-- ### MetricsGraphics enables easy creation of D3 scatterplots, line charts, and histograms. -->
-
-<!-- ```{r} -->
-<!-- library(metricsgraphics) -->
-<!-- mjs_plot(mtcars, x=wt, y=mpg) %>% -->
-<!--   mjs_point(color_accessor=carb, size_accessor=carb) %>% -->
-<!--   mjs_labs(x="Weight of Car", y="Miles per Gallon") -->
-<!-- ``` -->
-
-<!-- *** -->
-
-<!-- https://hrbrmstr.github.io/metricsgraphics/ -->
-
-<!-- Building metricsgraphics charts follows the “piping” idiom made popular through the magrittr, ggvis and dplyr packages. This makes it possible to avoid one giant function with a ton of parameters and facilitates breaking out the chart building into logical steps.  -->
-
-<!-- While MetricsGraphics.js charts may not have the flexibility of ggplot2, you can build functional, interactive [multi-]line, scatterplot, bar charts & histograms and + even link charts together. -->
+These conclusions could benefit every music enjoyer, meaning that it doesn't matter what features a song consists of if you like it or not is up to you. As for the artist having music liked by everyone is your goal, but that doesn't mean you need to change your style or persona to get there.
 
