@@ -1167,6 +1167,36 @@ Recovery has a strong outlier in mean energy. The eminem Show has relatively hig
 
 
 
+### Plotting the albums
+
+``` {r}
+test <- eminem_features %>%
+  ggplot(aes(x = energy, y = loudness, colour = playlist, size = c01)) +
+  geom_point(alpha = 0.65) +
+  scale_color_viridis_d() +
+  labs(
+    x = "Energy",
+    y = "Loudness",
+    size = "Timbre component 1",
+    colour = "Playlist"
+  )
+```
+``` {r}
+ggplotly(test)
+```
+
+
+***
+
+
+This graph is plotted on 3 of the more distinct features the random forest classifies them, size being linked to the feature: timbre component 1. This graph is interactive. Meaning that albums can be turned off or on. This is usefull for the comparisson between two albums and understanding why the forest has difficulty distinguishing between them.
+
+- on the previous page can be seen that the marshal mathers lp2 and recovery don't perform to well with regards to eachother. When looking at this graph you can see why.
+- when looking at the eminem show and kamikaze it becomesobvious that the forest model performs better on these albums, since they have more outliers, which makes it easier for the model to distinguish them.
+
+- Another interesting thing to see that Eminems albums are very similar when looking at features, since this is the clearest I could plot the graph. Using other features resulted in even more overlap.
+
+
 ### Results
 
 Eminem has changed through the years, but his style not so much. In recent years many people asked for the real slim shady back. However he was never realy gone. It is true that some of his albums weren't in the unique Eminem style, but that isn't something that only happened in the 2010-2020s. Eminem has 3 albums that have flopped in comparisson with his succesfull albums , namely Eminem presents the Re-Up, ShadyXV and revival. However when looking at the release date of these albums they are spread out over the course of his career. 

@@ -1,0 +1,405 @@
+---
+title: " My portfolio"
+author: "Jens Ruhof"
+date: "2/20/2021"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    social: menu
+    source: embed
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(spotifyr)
+library(dplyr)
+library(fmsb)
+library(png)
+library(plotly)
+library(compmus)
+library(gridExtra)
+library(cowplot)
+library(forcats)
+library(knitr)
+library(ggpubr)
+library(tidymodels)
+library(ggdendro)
+library(heatmaply)
+```
+
+
+
+
+``` {r get_playlist, include=FALSE}
+# Eminem overall
+ Eminem <- get_playlist_audio_features("", "6E8sLG3bm1meTRj8n5l0ll")
+mean_eminem <- Eminem %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+
+``` {r get_playlist_lp, include=FALSE}
+# Shady lp
+shady_lp <- get_playlist_audio_features("", "35sidb3NwfwV5QYnri3yLv")
+mean_shadylp <- shady_lp %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+
+``` {r get_playlist_xv, include=FALSE}
+shadyxv <- get_playlist_audio_features("", "3oJ5M47mmYILrqHyzuXctM")
+mean_shadyxv <- shadyxv %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_rev, include=FALSE}
+revival <- get_playlist_audio_features("", "7yqbChSYPODqONRuAw4noI")
+mean_revival <- revival %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_ref, include=FALSE}
+relapse_refill <- get_playlist_audio_features("", "1xyhz9gNz5jJIVTOA9v6Dh")
+mean_relapse_refill <- relapse_refill %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_del, include=FALSE}
+relapse_deluxe <- get_playlist_audio_features("", "1aQ1zZBcyBFDwsuOdm19cz")
+mean_relapse_deluxe<- relapse_deluxe %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_rec, include=FALSE}
+recovery <- get_playlist_audio_features("", "2FDhk6jh6iQUDCc7n73diZ")
+mean_recovery<- recovery %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_ma, include=FALSE}
+murdera <- get_playlist_audio_features("", "69NMqLx5Kszkwl0buUEoBA")
+mean_murdera<- murdera %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_mb, include=FALSE}
+murderb <- get_playlist_audio_features("", "5ZUIc7iAkEBBeEXzyj7eia")
+mean_murderb<- murderb %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_show, include=FALSE}
+eminemshow <- get_playlist_audio_features("", "5g2QlPXMIoH4j34xQiHE1J")
+mean_eminemshow <- eminemshow %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_matherlp, include=FALSE}
+matherlp<- get_playlist_audio_features("", "1ILmjmVb32khVNXG2Zw7kp")
+mean_matherlp <- matherlp %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_matherlp2, include=FALSE}
+matherlp2<- get_playlist_audio_features("", "2kmroX8obtAPEYaVPAaVHi")
+mean_matherlp2 <- matherlp2 %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_kamikaze, include=FALSE}
+kamikaze<- get_playlist_audio_features("", "6B5em5RI6brFjyK7eyos1h")
+mean_kamikaze <- kamikaze %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r get_playlist_encore, include=FALSE}
+encore<- get_playlist_audio_features("", "5VdzQrI0NliDdfwjQ0rPLN")
+mean_encore <- encore %>%
+  summarise(
+    mean_danceability = mean(danceability),
+    mean_energy = mean(energy),
+    mean_speechiness = mean(speechiness),
+    mean_acousticness = mean(acousticness),
+    mean_instrumentalness = mean(instrumentalness),
+    mean_liveness = mean(liveness),
+    mean_valence = mean(valence)
+    
+  )
+```
+
+``` {r}
+get_conf_mat <- function(fit) {
+  outcome <- .get_tune_outcome_names(fit)
+  fit %>% 
+    collect_predictions() %>% 
+    conf_mat(truth = outcome, estimate = .pred_class)
+}
+
+get_pr <- function(fit) {
+  fit %>% 
+    conf_mat_resampled() %>% 
+    group_by(Prediction) %>% mutate(precision = Freq / sum(Freq)) %>% 
+    group_by(Truth) %>% mutate(recall = Freq / sum(Freq)) %>% 
+    ungroup() %>% filter(Prediction == Truth) %>% 
+    select(class = Prediction, precision, recall)
+}  
+```
+
+
+
+
+``` {r}
+eminem_albums <-
+  bind_rows(
+    # shady_lp %>% mutate(playlist = "Shady_lp") %>% slice_head(n = 20),
+    # shadyxv %>% mutate(playlist = "Shady XV") %>% slice_head(n = 20),
+    # revival %>% mutate(playlist = "Revival") %>% slice_head(n = 20),
+    # relapse_refill %>% mutate(playlist = "Relapse refill") %>% slice_head(n = 20),
+    # relapse_deluxe %>% mutate(playlist = "Relapse Deluxe") %>% slice_head(n = 20),
+    recovery %>% mutate(playlist = "Recovery") %>% slice_head(n = 20),
+    # murdera %>% mutate(playlist = "Mustic to be murdered by A") %>% slice_head(n = 20),
+    # murderb %>% mutate(playlist = "Mustic to be murdered by B") %>% slice_head(n = 20),
+    eminemshow %>% mutate(playlist = "The Eminem Show") %>% slice_head(n = 20),
+    # matherlp %>% mutate(playlist = "Mather LP") %>% slice_head(n = 20),
+    matherlp2 %>% mutate(playlist = "Mather LP2") %>% slice_head(n = 20),
+    kamikaze %>% mutate(playlist = "Kamikaze") %>% slice_head(n = 20)
+    # encore %>% mutate(playlist = "Encore") %>% slice_head(n = 20)
+    
+  ) 
+```
+
+``` {r classify features}
+eminem_features <-
+  eminem_albums %>%  # For your portfolio, change this to the name of your corpus.
+  add_audio_analysis() %>% 
+  mutate(
+    playlist = factor(playlist),
+    segments = map2(segments, key, compmus_c_transpose),
+    pitches =
+      map(
+        segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      ),
+    timbre =
+      map(
+        segments,
+        compmus_summarise, timbre,
+        method = "mean",
+      )
+  ) %>%
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
+  mutate_at(vars(pitches, timbre), map, bind_rows) %>%
+  unnest(cols = c(pitches, timbre))
+
+```
+
+
+``` {r classify recipe}
+eminem_recipe <-
+  recipe(
+    playlist ~
+      danceability +
+      energy +
+      loudness +
+      speechiness +
+      acousticness +
+      instrumentalness +
+      liveness +
+      valence +
+      tempo +
+      duration +
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = eminem_features,          # Use the same name as the previous block.
+  ) %>%
+  step_center(all_predictors()) %>%
+  step_scale(all_predictors())      # Converts to z-scores.
+  # step_range(all_predictors())    # Sets range to [0, 1].
+```
+
+``` {r cross}
+eminem_cv <- eminem_features %>% vfold_cv(5)
+```
+
+
+``` {r forest}
+forest_model <-
+  rand_forest() %>%
+  set_mode("classification") %>% 
+  set_engine("ranger", importance = "impurity")
+eminem_forest <- 
+  workflow() %>% 
+  add_recipe(eminem_recipe) %>% 
+  add_model(forest_model) %>% 
+  fit_resamples(
+    eminem_cv, 
+    control = control_resamples(save_pred = TRUE)
+  )
+
+```
+
+``` {r forest pred}
+predi <-eminem_forest %>% get_pr()
+# eminem_forest %>% get_conf_mat()
+
+```
+
+``` {r forest mosaic}
+matrix <-eminem_forest %>% get_conf_mat() %>% autoplot(type = "mosaic")
+```
+
+
+
+
+
+### Plotting the albums
+
+``` {r}
+test <- eminem_features %>%
+  ggplot(aes(x = energy, y = loudness, colour = playlist, size = c01)) +
+  geom_point(alpha = 0.65) +
+  scale_color_viridis_d() +
+  labs(
+    x = "Energy",
+    y = "Loudness",
+    size = "Timbre component 1",
+    colour = "Playlist"
+  )
+```
+``` {r}
+ggplotly(test)
+```
+
+
+
+***
+
+
+This graph is plotted on 3 of the more distinct features the random forest classifies them, size being linked to the feature: timbre component 1. This graph is interactive. Meaning that albums can be turned off or on. This is usefull for the comparisson between two albums and understanding why the forest has difficulty distinguishing between them.
+
+- on the previous page can be seen that the marshal mathers lp2 and recovery don't perform to well with regards to eachother. When looking at this graph you can see why.
+- when looking at the eminem show and kamikaze it becomesobvious that the forest model performs better on these albums, since they have more outliers, which makes it easier for the model to distinguish them.
+
+- Another interesting thing to see that Eminems albums are very similar when looking at features, since this is the clearest I could plot the graph. Using other features resulted in even more overlap.
