@@ -1167,7 +1167,7 @@ Recovery has a strong outlier in mean energy. The eminem Show has relatively hig
 
 
 
-### Plotting the albums
+### Visualising the difficulties the random forest model had to face, by plotting the albums on the most important features.
 
 ``` {r}
 test <- eminem_features %>%
